@@ -5,26 +5,21 @@
 # ✅ 必要なライブラリをインストール
 # ===============================
 # ColabやStreamlit Cloudで動かすときに自動でインストールされるようにする
-!pip install openai requests
+
 
 # ===============================
 # ✅ モジュールをインポート
 # ===============================
 import os
+# -*- coding: utf-8 -*-
 from openai import OpenAI
 import requests
 from IPython.display import Image, display
+import streamlit as st
 
-# ===============================
-# 🔒 APIキーを安全に読み込む
-# ===============================
-# 環境変数 (Colabの場合はランタイムで設定 / Streamlitの場合は「secrets」で設定)
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-OPENWEATHER_KEY = os.getenv("OPENWEATHER_KEY")
-
-# ✅ 確認（キーが設定されていない場合にエラー表示）
-if not OPENAI_API_KEY or not OPENWEATHER_KEY:
-    raise ValueError("❌ APIキーが設定されていません。Colabなら os.environ で、Streamlitなら secrets.toml に設定してください。")
+# 🔑 APIキーは環境変数から取得
+OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
+OPENWEATHER_KEY = st.secrets["OPENWEATHER_KEY"]
 
 client = OpenAI(api_key=OPENAI_API_KEY)
 
