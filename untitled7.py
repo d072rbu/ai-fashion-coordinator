@@ -64,10 +64,18 @@ keyword = st.text_input("今日の気分やキーワードを入力してね（�
 if st.button("コーデを提案して！"):
     with st.spinner("AIが考え中です...🧠💭"):
         coord_text = ai_stylist(keyword)
+
+        # 🧩 デバッグ: 生成されたテキストを表示
+        st.write("🧩 DEBUG: coord_text =", coord_text)
+
         st.subheader("🧥 今日のAIコーデ提案")
         st.write(coord_text)
 
         st.subheader("🎨 コーデ画像")
-        image_url = generate_image(coord_text)
-        st.image(image_url, caption="AIが提案したコーデ", use_column_width=True)
-        st.success("🌸 今日も素敵な一日を！いってらっしゃい 💕")
+        try:
+            image_url = generate_image(coord_text)
+            st.image(image_url, caption="AIが提案したコーデ", use_column_width=True)
+            st.success("🌸 今日も素敵な一日を！いってらっしゃい 💕")
+        except Exception as e:
+            st.error("❌ 画像生成中にエラーが発生しました")
+            st.write("エラー内容:", str(e))
