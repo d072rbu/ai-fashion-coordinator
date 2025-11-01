@@ -1,3 +1,68 @@
+# 💖 Streamlitデザインカスタム
+st.markdown(
+    """
+    <style>
+    /* 背景をグラデーションに */
+    .stApp {
+        background: linear-gradient(135deg, #ffe6f0, #fff8f0);
+        color: #333333;
+        font-family: "Helvetica Neue", "Yu Gothic", "Noto Sans JP", sans-serif;
+    }
+
+    /* タイトル */
+    h1 {
+        color: #ff5c8d;
+        text-align: center;
+        font-size: 2.2em;
+        font-weight: bold;
+    }
+
+    /* サブヘッダー */
+    h2, h3 {
+        color: #ff8fa3;
+        font-weight: 600;
+    }
+
+    /* テキスト全般 */
+    p {
+        font-size: 1.05em;
+        line-height: 1.6em;
+    }
+
+    /* 入力ボックス */
+    .stTextInput>div>div>input {
+        border-radius: 10px;
+        border: 2px solid #ffb6c1;
+        background-color: #fff;
+    }
+
+    /* ボタン */
+    button[kind="primary"] {
+        background-color: #ff6fa1 !important;
+        color: white !important;
+        border-radius: 20px !important;
+        border: none !important;
+        font-weight: bold !important;
+        padding: 10px 24px !important;
+        transition: all 0.3s ease !important;
+    }
+
+    button[kind="primary"]:hover {
+        background-color: #ff85b3 !important;
+        transform: scale(1.05);
+    }
+
+    /* 成功メッセージ */
+    .stSuccess {
+        background-color: #ffeaf2 !important;
+        border-left: 5px solid #ff6fa1 !important;
+        color: #ff3f7a !important;
+        font-weight: 500;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 import streamlit as st
 from openai import OpenAI
 import requests
