@@ -18,7 +18,7 @@ def get_weather(city="Tokyo"):
     res = requests.get(url).json()
     desc = res["weather"][0]["description"]
     temp = res["main"]["temp"]
-    return f"{city}の天気は{desc}、気温は{temp}℃です。"
+    return f"{city}の天気が{desc}で気温は{temp}℃"
 
 # ===============================
 # 👚 AIにコーデ提案をしてもらう関数
@@ -41,17 +41,17 @@ def ai_stylist(keyword, city="Tokyo"):
     return text
 
 # ===============================
-# 🎨 コーデ画像を生成する関数
+# 🎨 （今回は無効）コーデ画像生成関数
 # ===============================
-def generate_image(description):
-    image_prompt = f"{description}, おしゃれな全身コーデ, リアルな人物, 明るい背景, 韓国風"
-    image = client.images.generate(
-        model="gpt-image-1",
-        prompt=image_prompt,
-        size="1024x1024"
-    )
-    url = image.data[0].url
-    return url
+# def generate_image(description):
+#     image_prompt = f"{description}, おしゃれな全身コーデ, リアルな人物, 明るい背景, 韓国風"
+#     image = client.images.generate(
+#         model="gpt-image-1",
+#         prompt=image_prompt,
+#         size="1024x1024"
+#     )
+#     url = image.data[0].url
+#     return url
 
 # ===============================
 # 🎀 Streamlit画面構成
@@ -65,17 +65,17 @@ if st.button("コーデを提案して！"):
     with st.spinner("AIが考え中です...🧠💭"):
         coord_text = ai_stylist(keyword)
 
-        # 🧩 デバッグ: 生成されたテキストを表示
-        st.write("🧩 DEBUG: coord_text =", coord_text)
-
+        # 🧥 結果表示
         st.subheader("🧥 今日のAIコーデ提案")
         st.write(coord_text)
 
-        st.subheader("🎨 コーデ画像")
-        try:
-            image_url = generate_image(coord_text)
-            st.image(image_url, caption="AIが提案したコーデ", use_column_width=True)
-            st.success("🌸 今日も素敵な一日を！いってらっしゃい 💕")
-        except Exception as e:
-            st.error("❌ 画像生成中にエラーが発生しました")
-            st.write("エラー内容:", str(e))
+        # 🎨 画像部分は無効化中
+        # st.subheader("🎨 コーデ画像")
+        # try:
+        #     image_url = generate_image(coord_text)
+        #     st.image(image_url, caption="AIが提案したコーデ", use_column_width=True)
+        # except Exception as e:
+        #     st.error("❌ 画像生成中にエラーが発生しました")
+        #     st.write(f"エラー内容: {e}")
+
+        st.success("🌸 今日も素敵な一日を！いってらっしゃい 💕")
