@@ -2,29 +2,6 @@ import streamlit as st
 from openai import OpenAI
 import requests
 
-# 💙 Streamlit 韓国シンプルクール（青系）デザイン
-st.markdown(
-    """
-    <style>
-    /* 背景：くすみブルー×白のドット */
-    .stApp {
-        background-color: #f4f8fb;
-        background-image: radial-gradient(#c9d8e6 1px, transparent 1px);
-        background-size: 18px 18px;
-        color: #2b2b2b;
-        font-family: "Noto Sans KR", "Yu Gothic", "Helvetica Neue", sans-serif;
-    }
-
-    /* タイトル */
-    h1 {
-        color: #244f75;
-        text-align: center;
-        font-size: 2em;
-        letter-spacing: 1px;
-        font-weight: 600;
-        border
-
-
 # ===============================
 # 🌤️ APIキーの読み込み（安全）
 # ===============================
@@ -34,6 +11,54 @@ OPENWEATHER_KEY = st.secrets["OPENWEATHER_KEY"]
 client = OpenAI(api_key=OPENAI_API_KEY)
 
 # ===============================
+# 💙 ページ設定 & デザイン
+# ===============================
+st.set_page_config(page_title="AIファッションアドバイザー", page_icon="👗", layout="centered")
+
+# 韓国風シンプルクール系デザイン
+st.markdown("""
+    <style>
+    body {
+        background-color: #f0f6fb;
+        color: #1a2e45;
+        font-family: 'Noto Sans JP', sans-serif;
+    }
+    h1 {
+        color: #164b7d;
+        font-size: 2.2em;
+        text-align: center;
+        font-weight: 700;
+        margin-bottom: 0.2em;
+    }
+    .subtitle {
+        text-align: center;
+        color: #4b6b8a;
+        font-size: 1.1em;
+        margin-bottom: 2em;
+    }
+    .stTextInput>div>div>input {
+        border: 1.5px solid #a4c6e1;
+        border-radius: 10px;
+        background-color: #ffffff;
+        color: #1a2e45;
+    }
+    .stButton>button {
+        background-color: #2b6cb0;
+        color: white;
+        font-weight: 600;
+        border-radius: 12px;
+        padding: 0.6em 1.2em;
+        border: none;
+        transition: all 0.2s ease-in-out;
+    }
+    .stButton>button:hover {
+        background-color: #1a4e80;
+        transform: scale(1.05);
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# ===============================
 # ☁️ 天気を取得する関数
 # ===============================
 def get_weather(city="Tokyo"):
@@ -41,7 +66,7 @@ def get_weather(city="Tokyo"):
     res = requests.get(url).json()
     desc = res["weather"][0]["description"]
     temp = res["main"]["temp"]
-    return f"{city}の天気が{desc}で気温は{temp}℃"
+    return f"{city}の天気は{desc}、気温は{temp}℃です。"
 
 # ===============================
 # 👚 AIにコーデ提案をしてもらう関数
@@ -64,41 +89,18 @@ def ai_stylist(keyword, city="Tokyo"):
     return text
 
 # ===============================
-# 🎨 （今回は無効）コーデ画像生成関数
-# ===============================
-# def generate_image(description):
-#     image_prompt = f"{description}, おしゃれな全身コーデ, リアルな人物, 明るい背景, 韓国風"
-#     image = client.images.generate(
-#         model="gpt-image-1",
-#         prompt=image_prompt,
-#         size="1024x1024"
-#     )
-#     url = image.data[0].url
-#     return url
-
-# ===============================
 # 🎀 Streamlit画面構成
 # ===============================
-st.title("👗 AIファッションアドバイザー")
-st.write("天気と気分から今日のコーデをAIが提案します💡")
+st.markdown("<h1>👗 AIファッションアドバイザー</h1>", unsafe_allow_html=True)
+st.markdown('<p class="subtitle">天気と気分から、今日のあなたにぴったりのコーデを提案します💡</p>', unsafe_allow_html=True)
 
 keyword = st.text_input("今日の気分やキーワードを入力してね（例：デート、韓国っぽ、カジュアル）")
 
 if st.button("コーデを提案して！"):
-    with st.spinner("AIが考え中です...🧠💭"):
+    with st.spinner("AIがコーデを考えています...🧠💭"):
         coord_text = ai_stylist(keyword)
-
-        # 🧥 結果表示
+        st.markdown("---")
         st.subheader("🧥 今日のAIコーデ提案")
         st.write(coord_text)
-
-        # 🎨 画像部分は無効化中
-        # st.subheader("🎨 コーデ画像")
-        # try:
-        #     image_url = generate_image(coord_text)
-        #     st.image(image_url, caption="AIが提案したコーデ", use_column_width=True)
-        # except Exception as e:
-        #     st.error("❌ 画像生成中にエラーが発生しました")
-        #     st.write(f"エラー内容: {e}")
-
+        st.markdown("---")
         st.success("🌸 今日も素敵な一日を！いってらっしゃい 💕")
