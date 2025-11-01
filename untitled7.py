@@ -1,23 +1,10 @@
-# -*- coding: utf-8 -*-
-"""AIファッションアドバイザー (安全版)"""
-
-# ===============================
-# ✅ 必要なライブラリをインストール
-# ===============================
-# ColabやStreamlit Cloudで動かすときに自動でインストールされるようにする
-
-
-# ===============================
-# ✅ モジュールをインポート
-# ===============================
-import os
-# -*- coding: utf-8 -*-
+import streamlit as st
 from openai import OpenAI
 import requests
-from IPython.display import Image, display
-import streamlit as st
 
-# 🔑 APIキーは環境変数から取得
+# ===============================
+# 🌤️ APIキーの読み込み（安全）
+# ===============================
 OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
 OPENWEATHER_KEY = st.secrets["OPENWEATHER_KEY"]
 
@@ -50,7 +37,8 @@ def ai_stylist(keyword, city="Tokyo"):
         model="gpt-4o-mini",
         messages=[{"role": "user", "content": prompt}]
     )
-    return response.choices[0].message.content
+    text = response.choices[0].message.content
+    return text
 
 # ===============================
 # 🎨 コーデ画像を生成する関数
@@ -66,15 +54,20 @@ def generate_image(description):
     return url
 
 # ===============================
-# 💬 実行部分
+# 🎀 Streamlit画面構成
 # ===============================
-keyword = input("今日の気分やキーワードを入力してね（例：デート、韓国っぽ、カジュアル）👉 ")
+st.title("👗 AIファッションアドバイザー")
+st.write("天気と気分から今日のコーデをAIが提案します💡")
 
-coord_text = ai_stylist(keyword)
-print("🧥 今日のAIコーデ提案:\n")
-print(coord_text)
+keyword = st.text_input("今日の気分やキーワードを入力してね（例：デート、韓国っぽ、カジュアル）")
 
-print("\n🎨 コーデ画像生成中...")
-image_url = generate_image(coord_text)
-display(Image(url=image_url))
-print(f"🖼️ 参考画像URL: {image_url}")
+if st.button("コーデを提案して！"):
+    with st.spinner("AIが考え中です...🧠💭"):
+        coord_text = ai_stylist(keyword)
+        st.subheader("🧥 今日のAIコーデ提案")
+        st.write(coord_text)
+
+        st.subheader("🎨 コーデ画像")
+        image_url = generate_image(coord_text)
+        st.image(image_url, caption="AIが提案したコーデ", use_column_width=True)
+        st.success("🌸 今日も素敵な一日を！いってらっしゃい 💕")
