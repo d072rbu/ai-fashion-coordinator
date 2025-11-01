@@ -1,68 +1,97 @@
-# 💖 Streamlitデザインカスタム
+# 🎨 Streamlit 韓国シンプルクール系デザイン
 st.markdown(
     """
     <style>
-    /* 背景をグラデーションに */
+    /* 背景を白ベースにして、ドット柄を控えめに */
     .stApp {
-        background: linear-gradient(135deg, #ffe6f0, #fff8f0);
-        color: #333333;
-        font-family: "Helvetica Neue", "Yu Gothic", "Noto Sans JP", sans-serif;
+        background-color: #fafafa;
+        background-image: radial-gradient(#dcdcdc 1px, transparent 1px);
+        background-size: 18px 18px;
+        color: #2b2b2b;
+        font-family: "Noto Sans KR", "Yu Gothic", "Helvetica Neue", sans-serif;
     }
 
     /* タイトル */
     h1 {
-        color: #ff5c8d;
+        color: #2b2b2b;
         text-align: center;
-        font-size: 2.2em;
-        font-weight: bold;
-    }
-
-    /* サブヘッダー */
-    h2, h3 {
-        color: #ff8fa3;
+        font-size: 2em;
+        letter-spacing: 1px;
         font-weight: 600;
+        border-bottom: 2px solid #dcdcdc;
+        padding-bottom: 10px;
+        margin-bottom: 25px;
     }
 
-    /* テキスト全般 */
-    p {
-        font-size: 1.05em;
-        line-height: 1.6em;
+    /* サブタイトル */
+    h2, h3 {
+        color: #444;
+        font-weight: 500;
+        border-left: 4px solid #aaa;
+        padding-left: 8px;
+        margin-top: 25px;
     }
 
     /* 入力ボックス */
     .stTextInput>div>div>input {
-        border-radius: 10px;
-        border: 2px solid #ffb6c1;
-        background-color: #fff;
+        border-radius: 6px;
+        border: 1.5px solid #bcbcbc;
+        background-color: #ffffff;
+        color: #333;
+        padding: 8px 12px;
+        font-size: 1em;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .stTextInput>div>div>input:focus {
+        border: 1.5px solid #666;
+        box-shadow: 0 0 0 3px rgba(0,0,0,0.05);
     }
 
     /* ボタン */
     button[kind="primary"] {
-        background-color: #ff6fa1 !important;
+        background-color: #2b2b2b !important;
         color: white !important;
-        border-radius: 20px !important;
-        border: none !important;
-        font-weight: bold !important;
-        padding: 10px 24px !important;
+        border-radius: 6px !important;
+        font-weight: 500 !important;
+        padding: 10px 28px !important;
+        letter-spacing: 0.5px;
         transition: all 0.3s ease !important;
     }
 
     button[kind="primary"]:hover {
-        background-color: #ff85b3 !important;
-        transform: scale(1.05);
+        background-color: #555 !important;
+        transform: scale(1.03);
+    }
+
+    /* テキスト全体 */
+    p, li {
+        font-size: 1.05em;
+        line-height: 1.7em;
+        color: #333;
     }
 
     /* 成功メッセージ */
     .stSuccess {
-        background-color: #ffeaf2 !important;
-        border-left: 5px solid #ff6fa1 !important;
-        color: #ff3f7a !important;
-        font-weight: 500;
+        background-color: #f6f6f6 !important;
+        border-left: 4px solid #555 !important;
+        color: #2b2b2b !important;
+        font-weight: 400;
     }
+
+    /* 画像を少し角丸に */
+    img {
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+
+    /* フッター非表示（すっきり） */
+    footer {visibility: hidden;}
     </style>
     """,
     unsafe_allow_html=True
 )
+
 import streamlit as st
 from openai import OpenAI
 import requests
