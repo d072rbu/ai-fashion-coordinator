@@ -1,3 +1,7 @@
+import streamlit as st
+from openai import OpenAI
+import requests
+
 # 🎨 Streamlit 韓国シンプルクール系デザイン
 st.markdown(
     """
@@ -92,9 +96,6 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-import streamlit as st
-from openai import OpenAI
-import requests
 
 # ===============================
 # 🌤️ APIキーの読み込み（安全）
