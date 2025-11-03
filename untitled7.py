@@ -11,47 +11,65 @@ OPENWEATHER_KEY = st.secrets["OPENWEATHER_KEY"]
 client = OpenAI(api_key=OPENAI_API_KEY)
 
 # ===============================
-# 💙 ページ設定 & デザイン
+# 💙 ページ設定
 # ===============================
 st.set_page_config(page_title="AIファッションアドバイザー", page_icon="👗", layout="centered")
 
-# 💅 デザインテーマ（韓国っぽ・青系・Noto Sans KR）
-st.markdown("""
-    <style>
-    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
+# ===============================
+# 🎨 フォント選択
+# ===============================
+font_choice = st.selectbox(
+    "フォントスタイルを選んでね 💅",
+    ["Noto Sans KR", "Pretendard", "SUIT"]
+)
 
-    html, body, [class*="css"] {
-        font-family: 'Noto Sans KR', sans-serif;
+# ===============================
+# 💅 スタイル適用
+# ===============================
+font_urls = {
+    "Noto Sans KR": "https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap",
+    "Pretendard": "https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css",
+    "SUIT": "https://cdn.jsdelivr.net/gh/sunn-us/SUIT/fonts/static/woff2/SUIT.css"
+}
+
+font_family = font_choice
+
+st.markdown(f"""
+    <style>
+    @import url('{font_urls[font_choice]}');
+
+    html, body, [class*="css"] {{
+        font-family: '{font_family}', sans-serif;
         background-color: #f0f6fb;
         color: #1a2e45;
-    }
+    }}
 
-    h1 {
+    h1 {{
         color: #164b7d;
         font-size: 2.2em;
         text-align: center;
         font-weight: 700;
         margin-bottom: 0.2em;
         letter-spacing: 0.03em;
-    }
+    }}
 
-    .subtitle {
+    .subtitle {{
         text-align: center;
         color: #4b6b8a;
         font-size: 1.1em;
         margin-bottom: 2em;
-    }
+    }}
 
-    .stTextInput>div>div>input {
+    .stTextInput>div>div>input {{
         border: 1.5px solid #a4c6e1;
         border-radius: 10px;
         background-color: #ffffff;
         color: #1a2e45;
         font-size: 1em;
         padding: 0.5em 0.8em;
-    }
+    }}
 
-    .stButton>button {
+    .stButton>button {{
         background-color: #2b6cb0;
         color: white;
         font-weight: 600;
@@ -59,20 +77,20 @@ st.markdown("""
         padding: 0.6em 1.2em;
         border: none;
         transition: all 0.2s ease-in-out;
-        font-family: 'Noto Sans KR', sans-serif;
+        font-family: '{font_family}', sans-serif;
         font-size: 1em;
-    }
+    }}
 
-    .stButton>button:hover {
+    .stButton>button:hover {{
         background-color: #1a4e80;
         transform: scale(1.05);
-    }
+    }}
 
-    .stMarkdown p {
+    .stMarkdown p {{
         font-size: 1.02em;
         line-height: 1.8em;
         color: #24384e;
-    }
+    }}
     </style>
 """, unsafe_allow_html=True)
 
