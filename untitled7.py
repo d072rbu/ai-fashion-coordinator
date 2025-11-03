@@ -1,6 +1,7 @@
 import streamlit as st
 from openai import OpenAI
 import requests
+import urllib.parse
 
 # ===============================
 # 🌤️ APIキーの読み込み（安全）
@@ -11,36 +12,40 @@ OPENWEATHER_KEY = st.secrets["OPENWEATHER_KEY"]
 client = OpenAI(api_key=OPENAI_API_KEY)
 
 # ===============================
-# 🌈 デザイン設定（青×白で爽やか）
+# 🎨 デザイン設定（パステル空色×白）
 # ===============================
 st.markdown("""
     <style>
     body {
-        background-color: #ffffff;
-        color: #1a2a6c;
+        background-color: #f8fbff;
+        color: #335c81;
         font-family: 'Noto Sans JP', sans-serif;
     }
     .main {
         background-color: #ffffff;
         border-radius: 20px;
         padding: 2rem;
-        box-shadow: 0 0 20px rgba(0,0,0,0.05);
+        box-shadow: 0 0 25px rgba(173, 216, 230, 0.25);
     }
     h1, h2, h3 {
-        color: #1a2a6c;
+        color: #3b6ea5;
         font-weight: bold;
     }
     .stButton>button {
-        background-color: #89CFF0;
-        color: white;
+        background-color: #a3d5ff;
+        color: #ffffff;
         font-size: 18px;
-        border-radius: 10px;
+        font-weight: 600;
+        border-radius: 12px;
         border: none;
-        padding: 0.6em 1.2em;
+        padding: 0.7em 1.4em;
     }
     .stButton>button:hover {
-        background-color: #58A4E0;
+        background-color: #89c7f5;
         transition: 0.3s;
+    }
+    .stSuccess {
+        color: #2a6f97 !important;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -76,28 +81,39 @@ def ai_stylist(keyword, city="Tokyo"):
     return text
 
 # ===============================
-# 📸 無料の参考画像を取得する関数（Unsplash）
+# 📸 無料参考画像を取得（Unsplash）
 # ===============================
 def get_reference_image(keyword):
-    url = f"https://source.unsplash.com/800x800/?{keyword},outfit,fashion"
+    english_keywords = {
+        "韓国": "korean fashion outfit",
+        "デート": "date outfit",
+        "カジュアル": "casual outfit",
+        "モノトーン": "minimal outfit",
+        "フェミニン": "feminine outfit",
+        "スポーティ": "sporty outfit",
+    }
+
+    search_term = english_keywords.get(keyword, f"{keyword} fashion outfit")
+    search_term_encoded = urllib.parse.quote(search_term)
+    url = f"https://source.unsplash.com/800x800/?{search_term_encoded}"
     return url
 
 # ===============================
 # 🎀 Streamlit画面構成
 # ===============================
-st.title("💙 AIファッションアドバイザー 💙")
-st.write("☁️ 天気と気分から今日のコーデをAIが提案します ☀️🍀")
+st.title("🌸 AIファッションアドバイザー 💙")
+st.write("☁️ 天気と気分から今日のコーデをAIが提案します ✨🍀")
 
-keyword = st.text_input("🌸 今日の気分やキーワードを入力してね（例：デート、韓国っぽ、カジュアル）")
+keyword = st.text_input("💬 今日の気分やキーワードを入力してね（例：デート、韓国、カジュアル）")
 
-if st.button("コーデを提案して！ 🎀"):
+if st.button("コーデを提案して！ 💎"):
     with st.spinner("AIが考え中です...🧠💭"):
         coord_text = ai_stylist(keyword)
-        st.subheader("🧥 今日のAIコーデ提案")
+        st.subheader("👗 今日のAIコーデ提案")
         st.write(coord_text)
 
-        st.subheader("📸 参考コーデ画像（Unsplashより）")
+        st.subheader("📸 参考コーデ画像（無料・Unsplash）")
         image_url = get_reference_image(keyword)
         st.image(image_url, caption="AIが選んだ参考コーデ画像", use_column_width=True)
 
-        st.success("🍀 今日もあなたらしく、素敵な一日を！ 💙")
+        st.success("🍀 今日もあなたらしく、空みたいに澄んだ一日を 💙")
