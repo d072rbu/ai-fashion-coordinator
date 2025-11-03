@@ -3,7 +3,7 @@ from openai import OpenAI
 import requests
 
 # ===============================
-# 🔑 APIキー設定
+# 🌤️ APIキーの読み込み（安全）
 # ===============================
 OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
 OPENWEATHER_KEY = st.secrets["OPENWEATHER_KEY"]
@@ -11,87 +11,42 @@ OPENWEATHER_KEY = st.secrets["OPENWEATHER_KEY"]
 client = OpenAI(api_key=OPENAI_API_KEY)
 
 # ===============================
-# 🌸 ページ設定
-# ===============================
-st.set_page_config(page_title="AIファッションアドバイザー", page_icon="👗", layout="centered")
-
-# ===============================
-# 🌿 スタイル設定（白背景＋固定フォント）
+# 🌈 デザイン設定（青×白で爽やか）
 # ===============================
 st.markdown("""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
-
-    html, body, [class*="css"] {
-        font-family: 'Noto Sans KR', sans-serif;
-        background-color: #ffffff !important;
-        color: #334155;
+    body {
+        background-color: #ffffff;
+        color: #1a2a6c;
+        font-family: 'Noto Sans JP', sans-serif;
     }
-
-    section.main > div {
-        background-color: #ffffff !important;
-    }
-
-    h1 {
-        color: #2563eb;
-        text-align: center;
-        font-size: 2.4em;
-        font-weight: 700;
-        margin-bottom: 0.3em;
-    }
-
-    .subtitle {
-        text-align: center;
-        color: #64748b;
-        font-size: 1.1em;
-        margin-bottom: 2em;
-    }
-
-    .stTextInput>div>div>input {
-        border: 1.5px solid #93c5fd;
-        border-radius: 10px;
-        background-color: #f8fafc;
-        color: #334155;
-        font-size: 1em;
-        padding: 0.5em 0.8em;
-    }
-
-    .stButton>button {
-        background-color: #3b82f6;
-        color: white;
-        font-weight: 600;
-        border-radius: 14px;
-        padding: 0.6em 1.4em;
-        border: none;
-        box-shadow: 0 3px 6px rgba(59,130,246,0.2);
-        transition: all 0.2s ease-in-out;
-        font-family: 'Noto Sans KR', sans-serif;
-        font-size: 1em;
-    }
-
-    .stButton>button:hover {
-        background-color: #2563eb;
-        transform: scale(1.05);
-    }
-
-    .stMarkdown p {
-        font-size: 1.05em;
-        line-height: 1.8em;
-        color: #334155;
-    }
-
-    .card {
-        background: #f9fafb;
+    .main {
+        background-color: #ffffff;
         border-radius: 20px;
-        padding: 1.5em;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        margin: 1.5em 0;
+        padding: 2rem;
+        box-shadow: 0 0 20px rgba(0,0,0,0.05);
+    }
+    h1, h2, h3 {
+        color: #1a2a6c;
+        font-weight: bold;
+    }
+    .stButton>button {
+        background-color: #89CFF0;
+        color: white;
+        font-size: 18px;
+        border-radius: 10px;
+        border: none;
+        padding: 0.6em 1.2em;
+    }
+    .stButton>button:hover {
+        background-color: #58A4E0;
+        transition: 0.3s;
     }
     </style>
 """, unsafe_allow_html=True)
 
 # ===============================
-# ☁️ 天気を取得
+# ☁️ 天気を取得する関数
 # ===============================
 def get_weather(city="Tokyo"):
     url = f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={OPENWEATHER_KEY}&units=metric&lang=ja"
@@ -101,7 +56,7 @@ def get_weather(city="Tokyo"):
     return f"{city}の天気は{desc}、気温は{temp}℃です。"
 
 # ===============================
-# 👗 AIファッション提案
+# 👚 AIにコーデ提案をしてもらう関数
 # ===============================
 def ai_stylist(keyword, city="Tokyo"):
     weather = get_weather(city)
@@ -121,18 +76,28 @@ def ai_stylist(keyword, city="Tokyo"):
     return text
 
 # ===============================
-# 🌸 UIレイアウト
+# 📸 無料の参考画像を取得する関数（Unsplash）
 # ===============================
-st.markdown("<h1>👗 AIファッションアドバイザー 🍀🎵</h1>", unsafe_allow_html=True)
-st.markdown('<p class="subtitle">天気と気分から、今日のあなたにぴったりのコーデを提案します💡</p>', unsafe_allow_html=True)
+def get_reference_image(keyword):
+    url = f"https://source.unsplash.com/800x800/?{keyword},outfit,fashion"
+    return url
 
-keyword = st.text_input("今日の気分やキーワードを入力してね（例：デート、韓国っぽ、カジュアル）")
+# ===============================
+# 🎀 Streamlit画面構成
+# ===============================
+st.title("💙 AIファッションアドバイザー 💙")
+st.write("☁️ 天気と気分から今日のコーデをAIが提案します ☀️🍀")
 
-if st.button("🌼 コーデを提案して！"):
+keyword = st.text_input("🌸 今日の気分やキーワードを入力してね（例：デート、韓国っぽ、カジュアル）")
+
+if st.button("コーデを提案して！ 🎀"):
     with st.spinner("AIが考え中です...🧠💭"):
         coord_text = ai_stylist(keyword)
-        st.markdown('<div class="card">', unsafe_allow_html=True)
-        st.subheader("🧥 今日のAIコーデ提案 🍀")
+        st.subheader("🧥 今日のAIコーデ提案")
         st.write(coord_text)
-        st.markdown('</div>', unsafe_allow_html=True)
-        st.success("🎵 今日も笑顔でいってらっしゃい 💙")
+
+        st.subheader("📸 参考コーデ画像（Unsplashより）")
+        image_url = get_reference_image(keyword)
+        st.image(image_url, caption="AIが選んだ参考コーデ画像", use_column_width=True)
+
+        st.success("🍀 今日もあなたらしく、素敵な一日を！ 💙")
