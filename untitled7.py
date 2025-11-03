@@ -15,33 +15,42 @@ client = OpenAI(api_key=OPENAI_API_KEY)
 # ===============================
 st.set_page_config(page_title="AIファッションアドバイザー", page_icon="👗", layout="centered")
 
-# 韓国風シンプルクール系デザイン
+# 💅 デザインテーマ（韓国っぽ・青系・Noto Sans KR）
 st.markdown("""
     <style>
-    body {
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
+
+    html, body, [class*="css"] {
+        font-family: 'Noto Sans KR', sans-serif;
         background-color: #f0f6fb;
         color: #1a2e45;
-        font-family: 'Noto Sans JP', sans-serif;
     }
+
     h1 {
         color: #164b7d;
         font-size: 2.2em;
         text-align: center;
         font-weight: 700;
         margin-bottom: 0.2em;
+        letter-spacing: 0.03em;
     }
+
     .subtitle {
         text-align: center;
         color: #4b6b8a;
         font-size: 1.1em;
         margin-bottom: 2em;
     }
+
     .stTextInput>div>div>input {
         border: 1.5px solid #a4c6e1;
         border-radius: 10px;
         background-color: #ffffff;
         color: #1a2e45;
+        font-size: 1em;
+        padding: 0.5em 0.8em;
     }
+
     .stButton>button {
         background-color: #2b6cb0;
         color: white;
@@ -50,10 +59,19 @@ st.markdown("""
         padding: 0.6em 1.2em;
         border: none;
         transition: all 0.2s ease-in-out;
+        font-family: 'Noto Sans KR', sans-serif;
+        font-size: 1em;
     }
+
     .stButton>button:hover {
         background-color: #1a4e80;
         transform: scale(1.05);
+    }
+
+    .stMarkdown p {
+        font-size: 1.02em;
+        line-height: 1.8em;
+        color: #24384e;
     }
     </style>
 """, unsafe_allow_html=True)
