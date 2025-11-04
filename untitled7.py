@@ -109,7 +109,7 @@ def generate_outfit_image(keyword, city="Tokyo"):
         image = client.images.generate(
             model="gpt-image-1",
             prompt=prompt,
-            size="512x512"
+            size="1024x1024"
         )
         image_url = image.data[0].url
         return image_url
