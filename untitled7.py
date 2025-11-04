@@ -104,10 +104,6 @@ def generate_outfit_image(keyword, city="Tokyo"):
 # 🎨 AIでコーデのイラストを生成する関数
 # ===============================
 def generate_outfit_image(keyword, city="Tokyo"):
-
-
-
-    
     weather = get_weather(city)
     prompt = f"""
 {weather}にぴったりな『{keyword}』スタイルのファッションイラストを描いてください。
