@@ -96,25 +96,27 @@ def ai_stylist(keyword, city="Tokyo"):
 # ===============================
 def generate_outfit_image(keyword, city="Tokyo"):
     weather = get_weather(city)
-    prompt = f"""
-{weather}にぴったりな『{keyword}』スタイルのファッションイラストを描いてください。
-全身が見えるように、シンプルで韓国っぽいスタイルで。
-背景は白っぽく、人物だけが映っている感じでお願いします。
-"""
-    if "雨" in weather:
-        prompt += "レインコートや傘なども含めてください。"
-    elif "晴" in weather:
-        prompt += "明るく爽やかな雰囲気でお願いします。"
-    elif "曇" in weather:
-        prompt += "落ち着いた色味のコーデにしてください。"
+    prompt = f"{weather}に合う『{keyword}』スタイルの服装イメージを描いてください。人物は含めず、服だけが置かれているシンプルな構図でお願いします。"
 
-    image = client.images.generate(
-        model="gpt-image-1",
-        prompt=prompt,
-        size="512x512"
-    )
-    image_url = image.data[0].url
-    return image_url
+    if "雨" in weather:
+        prompt += "傘やレインコートを含めてください。"
+    elif "晴" in weather:
+        prompt += "明るい雰囲気で。"
+    elif "曇" in weather:
+        prompt += "落ち着いた色味で。"
+
+    try:
+        image = client.images.generate(
+            model="gpt-image-1",
+            prompt=prompt,
+            size="512x512"
+        )
+        image_url = image.data[0].url
+        return image_url
+    except Exception as e:
+        st.warning("⚠️ 画像を生成できませんでした。テキストのみを表示します。")
+        st.text(f"エラー内容: {str(e)[:100]}")  # 最初の100文字だけ表示
+        return None
 
 
 # ===============================
