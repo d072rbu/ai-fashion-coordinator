@@ -45,7 +45,7 @@ def ai_stylist(keyword, city="Tokyo"):
 # 🎨 コーデ画像生成（Hugging Face）
 # ===============================
 def generate_outfit_image(prompt):
-    api_url = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-2"
+    api_url = "https://router.huggingface.co/hf-inference/models/stabilityai/stable-diffusion-2"
     headers = {"Authorization": f"Bearer {HUGGINGFACE_TOKEN}"}
     payload = {"inputs": prompt}
     response = requests.post(api_url, headers=headers, json=payload)
