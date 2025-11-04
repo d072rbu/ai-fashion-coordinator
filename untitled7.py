@@ -93,10 +93,20 @@ def generate_outfit_image(keyword, city="Tokyo"):
 全身が見えるように、シンプルで韓国っぽいスタイルで。
 背景は白っぽく、人物だけが映っている感じでお願いします。
 """
+    def generate_outfit_image(keyword, city="Tokyo"):
+    weather = get_weather(city)
+    prompt = f"""
+{weather}にぴったりな『{keyword}』スタイルのファッションイラストを描いてください。
+全身が見えるように、シンプルで韓国っぽいスタイルで。
+背景は白っぽく、人物だけが映っている感じでお願いします。
+"""
+    # 👇インデントを4つそろえる！
     if "雨" in weather:
-    prompt += "レインコートや傘なども含めてください。"
-elif "晴" in weather:
-    prompt += "明るく爽やかな雰囲気でお願いします。"
+        prompt += "レインコートや傘なども含めてください。"
+    elif "晴" in weather:
+        prompt += "明るく爽やかな雰囲気でお願いします。"
+    elif "曇" in weather:
+        prompt += "落ち着いた色味のコーデにしてください。"
 
     image = client.images.generate(
         model="gpt-image-1",
