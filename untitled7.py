@@ -27,19 +27,69 @@ def get_weather(city="Tokyo"):
 # ===============================
 def ai_stylist(keyword, city="Tokyo"):
     weather = get_weather(city)
-    prompt = f"""
+
+    # キーワードを小文字に変換して判定
+    keyword_lower = keyword.lower()
+
+    # ===============================
+    # 🎯 スタイルごとのプロンプト
+    # ===============================
+    if "enzoblue" in keyword_lower or "モード" in keyword_lower or "韓国" in keyword_lower:
+        style = "モード×ミニマルストリート（Enzoblue系）"
+        style_desc = f"""
+あなたは韓国・ソウルの人気セレクトショップ『ENZOBLUE』のスタイリストです。
 今日の{weather}
 キーワード: {keyword}
 
-この条件にぴったりのファッションコーデを提案して。
-具体的な服の組み合わせと理由を説明して。
-最後にポジティブな一言で締めて！
+[指示]
+- [ユーザーのキーワード] に合うコーディネートを提案してください。
+- enzoblueのような雰囲気（ミニマル、アーバン、ユニセックス、ニュートラルカラー、モード × ストリートのバランス）を参考にしてください。
+- シルエットや素材感、色の組み合わせを詳しく説明し、写真のように自然で洗練されたスタイルにしてください。
+- 性別は固定せず、誰でも真似できるスタイルに。
+- 最後に“今日のスタイルで自信を持って歩こう”のような一言を添えて。
+
+関連ブランドキーワード（AI理解用）:
+style inspired by Enzoblue, Andersson Bell, RECTO, Ader Error, Matin Kim, LIFUL Minimal Garments, O!Oi Collection, MUSINSA Standard, COS, Maison Margiela (minimal side)
 """
+    elif "デート" in keyword_lower or "可愛い" in keyword_lower:
+        style = "フェミニンナチュラル系"
+        style_desc = f"""
+あなたは韓国の人気スタイリストです。
+今日の{weather}
+キーワード: {keyword}
+
+[指示]
+・デートやお出かけにぴったりな、優しくて柔らかい印象のコーデを提案してください。
+・パステルカラーやシフォン、リネン素材を上品に組み合わせてください。
+・全体の統一感とかわいさを意識して。
+・最後にポジティブな一言を添えて。
+"""
+    else:
+        style = "シンプルクール系"
+        style_desc = f"""
+あなたは韓国のファッション誌『VOGUE Korea』のスタイリストです。
+今日の{weather}
+キーワード: {keyword}
+
+[指示]
+・シンプルで洗練された、クールな大人のコーデを提案してください。
+・無駄を省きながらも、素材感とシルエットで高見えするスタイルに。
+・白・黒・ベージュ・グレーなどのニュートラルカラーを基調に。
+・最後に前向きな一言を添えてください。
+"""
+
+    # ===============================
+    # 💬 AI呼び出し
+    # ===============================
+    prompt = style_desc
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[{"role": "user", "content": prompt}]
     )
-    return response.choices[0].message.content
+
+    text = response.choices[0].message.content
+    return f"💫 スタイルタイプ: {style}\n\n{text}"
+
 
 # ===============================
 # 🎨 コーデ画像生成（Hugging Face）
