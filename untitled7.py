@@ -83,7 +83,7 @@ def ai_stylist(keyword, city="Tokyo"):
 # 🎨 コーデ画像生成（Stable Diffusion）
 # ===============================
 def generate_outfit_image(prompt):
-    api_url = "https://router.huggingface.co/hf-inference/models/stabilityai/stable-diffusion-2"
+   api_url = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0"
     headers = {"Authorization": f"Bearer {HUGGINGFACE_TOKEN}"}
 
     # ファッション誌のようなリアルでおしゃれな画像を生成
