@@ -90,22 +90,24 @@ style inspired by Enzoblue, Andersson Bell, RECTO, Ader Error, Matin Kim, LIFUL 
     text = response.choices[0].message.content
     return f"💫 スタイルタイプ: {style}\n\n{text}"
 
+#コーデ画像生成
+import requests
+import streamlit as st
 
-# ===============================
-# 🎨 コーデ画像生成（Hugging Face）
-# ===============================
-def generate_outfit_image(prompt):
-    api_url = "https://router.huggingface.co/hf-inference/models/stabilityai/stable-diffusion-2"
-    headers = {"Authorization": f"Bearer {HUGGINGFACE_TOKEN}"}
-    payload = {"inputs": prompt}
-    response = requests.post(api_url, headers=headers, json=payload)
-    
-    if response.status_code != 200:
-        st.warning(f"⚠️ 画像生成に失敗しました: {response.text}")
+PIXABAY_KEY = st.secrets["PIXABAY_KEY"]  # Streamlitの秘密キーに追加しておく
+
+def generate_outfit_image(keyword):
+    # Pixabayに写真を検索してもらうURL
+    url = f"https://pixabay.com/api/?key={PIXABAY_KEY}&q={keyword}&image_type=photo&per_page=3"
+    res = requests.get(url).json()
+
+    if res["totalHits"] > 0:
+        # 見つかった最初の画像のURLを返す
+        return res["hits"][0]["webformatURL"]
+    else:
+        st.warning("⚠️ Pixabayで画像が見つかりませんでした")
         return None
 
-    image_bytes = response.content
-    return image_bytes
 
 # ===============================
 # 💙 Streamlit UI
