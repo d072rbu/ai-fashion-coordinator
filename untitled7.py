@@ -1,14 +1,13 @@
 import streamlit as st
 from openai import OpenAI
 import requests
-import random
 
 # ===============================
 # ☁️ APIキーの読み込み
 # ===============================
 OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
 OPENWEATHER_KEY = st.secrets["OPENWEATHER_KEY"]
-PIXABAY_KEY = st.secrets["PIXABAY_KEY"]
+HUGGINGFACE_TOKEN = st.secrets["HUGGINGFACE_TOKEN"]
 
 client = OpenAI(api_key=OPENAI_API_KEY)
 
@@ -39,7 +38,7 @@ def ai_stylist(keyword, city="Tokyo"):
 [指示]
 - [ユーザーのキーワード] に合うコーディネートを提案してください。
 - enzoblueのような雰囲気（ミニマル、アーバン、ユニセックス、ニュートラルカラー、モード × ストリートのバランス）を参考にしてください。
-- シルエットや素材感、色の組み合わせを詳しく説明し、写真のように自然で洗練されたスタイルにしてください。
+- シルエットや素材感、色の組み合わせを詳しく説明し、自然で洗練されたスタイルに。
 - 性別は固定せず、誰でも真似できるスタイルに。
 - 最後に“今日のスタイルで自信を持って歩こう”のような一言を添えて。
 """
@@ -70,31 +69,38 @@ def ai_stylist(keyword, city="Tokyo"):
 ・最後に前向きな一言を添えてください。
 """
 
-    prompt = style_desc
+    # OpenAIでテキスト生成
     response = client.chat.completions.create(
         model="gpt-4o-mini",
-        messages=[{"role": "user", "content": prompt}]
+        messages=[{"role": "user", "content": style_desc}]
     )
 
     text = response.choices[0].message.content
-    return f"💫 スタイルタイプ: {style}\n\n{text}"
+    return style, text
+
 
 # ===============================
-# 🎨 コーデ画像検索（Pixabay）
+# 🎨 コーデ画像生成（Stable Diffusion）
 # ===============================
-def generate_outfit_image(keyword):
-    # 検索キーワードを少し具体的にする
-    search_term = f"{keyword} fashion outfit full body"
-    url = f"https://pixabay.com/api/?key={PIXABAY_KEY}&q={search_term}&image_type=photo&per_page=10"
-    res = requests.get(url).json()
+def generate_outfit_image(prompt):
+    api_url = "https://router.huggingface.co/hf-inference/models/stabilityai/stable-diffusion-2"
+    headers = {"Authorization": f"Bearer {HUGGINGFACE_TOKEN}"}
 
-    if res["totalHits"] > 0:
-        # ランダムに1枚選ぶ
-        image_data = random.choice(res["hits"])
-        return image_data["webformatURL"]
-    else:
-        st.warning("⚠️ Pixabayで画像が見つかりませんでした")
+    # ファッション誌のようなリアルでおしゃれな画像を生成
+    full_prompt = f"""
+A full-body photo of a person wearing {prompt}, stylish outfit,
+high-quality fashion photography, natural lighting, street style, minimal background.
+"""
+
+    payload = {"inputs": full_prompt}
+    response = requests.post(api_url, headers=headers, json=payload)
+
+    if response.status_code != 200:
+        st.warning(f"⚠️ 画像生成に失敗しました: {response.text}")
         return None
+
+    return response.content
+
 
 # ===============================
 # 💙 Streamlit UI
@@ -106,13 +112,15 @@ keyword = st.text_input("💬 今日のキーワードを入力（例：デー�
 
 if st.button("コーデを提案して！ 💙"):
     with st.spinner("AIが考え中です...💭"):
-        # コーデ提案
-        coord_text = ai_stylist(keyword)
+        # テキスト提案
+        style, coord_text = ai_stylist(keyword)
         st.subheader("👗 今日のコーデ提案")
-        st.write(coord_text)
+        st.write(f"💫 スタイルタイプ: {style}\n\n{coord_text}")
 
-        # Pixabay画像表示
+        # 画像生成
         st.subheader("🎨 イメージ画像")
-        image_url = generate_outfit_image(keyword)
-        if image_url:
-            st.image(image_url, caption="今日のおすすめコーデ", use_container_width=True)
+        image = generate_outfit_image(f"{style}, {keyword} fashion outfit")
+        if image:
+            st.image(image, caption="今日のおすすめコーデ", use_container_width=True)
+        else:
+            st.warning("⚠️ 画像を表示できませんでした。")
