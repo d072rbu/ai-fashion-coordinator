@@ -1,14 +1,14 @@
 import streamlit as st
 from openai import OpenAI
 import requests
-import base64
+import random
 
 # ===============================
 # ☁️ APIキーの読み込み
 # ===============================
 OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
 OPENWEATHER_KEY = st.secrets["OPENWEATHER_KEY"]
-HUGGINGFACE_TOKEN = st.secrets["HUGGINGFACE_TOKEN"]
+PIXABAY_KEY = st.secrets["PIXABAY_KEY"]
 
 client = OpenAI(api_key=OPENAI_API_KEY)
 
@@ -27,13 +27,8 @@ def get_weather(city="Tokyo"):
 # ===============================
 def ai_stylist(keyword, city="Tokyo"):
     weather = get_weather(city)
-
-    # キーワードを小文字に変換して判定
     keyword_lower = keyword.lower()
 
-    # ===============================
-    # 🎯 スタイルごとのプロンプト
-    # ===============================
     if "enzoblue" in keyword_lower or "モード" in keyword_lower or "韓国" in keyword_lower:
         style = "モード×ミニマルストリート（Enzoblue系）"
         style_desc = f"""
@@ -47,9 +42,6 @@ def ai_stylist(keyword, city="Tokyo"):
 - シルエットや素材感、色の組み合わせを詳しく説明し、写真のように自然で洗練されたスタイルにしてください。
 - 性別は固定せず、誰でも真似できるスタイルに。
 - 最後に“今日のスタイルで自信を持って歩こう”のような一言を添えて。
-
-関連ブランドキーワード（AI理解用）:
-style inspired by Enzoblue, Andersson Bell, RECTO, Ader Error, Matin Kim, LIFUL Minimal Garments, O!Oi Collection, MUSINSA Standard, COS, Maison Margiela (minimal side)
 """
     elif "デート" in keyword_lower or "可愛い" in keyword_lower:
         style = "フェミニンナチュラル系"
@@ -78,9 +70,6 @@ style inspired by Enzoblue, Andersson Bell, RECTO, Ader Error, Matin Kim, LIFUL 
 ・最後に前向きな一言を添えてください。
 """
 
-    # ===============================
-    # 💬 AI呼び出し
-    # ===============================
     prompt = style_desc
     response = client.chat.completions.create(
         model="gpt-4o-mini",
@@ -90,24 +79,22 @@ style inspired by Enzoblue, Andersson Bell, RECTO, Ader Error, Matin Kim, LIFUL 
     text = response.choices[0].message.content
     return f"💫 スタイルタイプ: {style}\n\n{text}"
 
-#コーデ画像生成
-import requests
-import streamlit as st
-
-PIXABAY_KEY = st.secrets["PIXABAY_KEY"]  # Streamlitの秘密キーに追加しておく
-
+# ===============================
+# 🎨 コーデ画像検索（Pixabay）
+# ===============================
 def generate_outfit_image(keyword):
-    # Pixabayに写真を検索してもらうURL
-    url = f"https://pixabay.com/api/?key={PIXABAY_KEY}&q={keyword}&image_type=photo&per_page=3"
+    # 検索キーワードを少し具体的にする
+    search_term = f"{keyword} fashion outfit full body"
+    url = f"https://pixabay.com/api/?key={PIXABAY_KEY}&q={search_term}&image_type=photo&per_page=10"
     res = requests.get(url).json()
 
     if res["totalHits"] > 0:
-        # 見つかった最初の画像のURLを返す
-        return res["hits"][0]["webformatURL"]
+        # ランダムに1枚選ぶ
+        image_data = random.choice(res["hits"])
+        return image_data["webformatURL"]
     else:
         st.warning("⚠️ Pixabayで画像が見つかりませんでした")
         return None
-
 
 # ===============================
 # 💙 Streamlit UI
@@ -119,13 +106,13 @@ keyword = st.text_input("💬 今日のキーワードを入力（例：デー�
 
 if st.button("コーデを提案して！ 💙"):
     with st.spinner("AIが考え中です...💭"):
+        # コーデ提案
         coord_text = ai_stylist(keyword)
         st.subheader("👗 今日のコーデ提案")
         st.write(coord_text)
 
+        # Pixabay画像表示
         st.subheader("🎨 イメージ画像")
-        image = generate_outfit_image(f"{keyword} fashion outfit, aesthetic, full body")
-        if image:
-            st.image(image, caption="今日のおすすめコーデ", use_container_width=True)
-        else:
-            st.warning("⚠️ 画像を表示できませんでした。")
+        image_url = generate_outfit_image(keyword)
+        if image_url:
+            st.image(image_url, caption="今日のおすすめコーデ", use_container_width=True)
