@@ -1,1 +1,5 @@
-mkdir static
+ai-fashion-3d/
+├─ app.py
+├─ threejs_viewer.html
+└─ static/
+    └─ mannequin.glb
