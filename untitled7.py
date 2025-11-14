@@ -83,16 +83,22 @@ def ai_stylist(keyword, city="Tokyo"):
 # 🎨 コーデ画像生成（Stable Diffusion）
 # ===============================
 def generate_outfit_image(prompt):
-    api_url = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0"
+    api_url = "https://router.huggingface.co/hf-inference/models/stabilityai/stable-diffusion-xl-base-1.0"
     headers = {"Authorization": f"Bearer {HUGGINGFACE_TOKEN}"}
 
-    # プロンプト（Fashion 雑誌風）
     full_prompt = f"""
 A full-body photo of a person wearing {prompt}, stylish outfit,
 high-quality fashion photography, natural lighting, street style, minimal background.
 """
 
-    payload = {"inputs": full_prompt}
+    payload = {
+        "inputs": full_prompt,
+        "parameters": {
+            "num_inference_steps": 30,
+            "guidance_scale": 7.0
+        }
+    }
+
     response = requests.post(api_url, headers=headers, json=payload)
 
     if response.status_code != 200:
@@ -100,6 +106,7 @@ high-quality fashion photography, natural lighting, street style, minimal backgr
         return None
 
     return response.content
+
 
 
 # ===============================
