@@ -87,7 +87,7 @@ def generate_outfit_image(prompt):
    headers = {"Authorization": f"Bearer {HUGGINGFACE_TOKEN}"}
 
     # ファッション誌のようなリアルでおしゃれな画像を生成
-    full_prompt = f"""
+full_prompt = f"""
 A full-body photo of a person wearing {prompt}, stylish outfit,
 high-quality fashion photography, natural lighting, street style, minimal background.
 """
