@@ -69,7 +69,7 @@ def ai_stylist(keyword, city="Tokyo"):
 ・最後に前向きな一言を添えてください。
 """
 
-    # OpenAIでテキスト生成
+    # OpenAI 生成
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[{"role": "user", "content": style_desc}]
@@ -83,23 +83,23 @@ def ai_stylist(keyword, city="Tokyo"):
 # 🎨 コーデ画像生成（Stable Diffusion）
 # ===============================
 def generate_outfit_image(prompt):
-   api_url = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0"
-   headers = {"Authorization": f"Bearer {HUGGINGFACE_TOKEN}"}
+    api_url = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0"
+    headers = {"Authorization": f"Bearer {HUGGINGFACE_TOKEN}"}
 
-    # ファッション誌のようなリアルでおしゃれな画像を生成
-full_prompt = f"""
+    # プロンプト（Fashion 雑誌風）
+    full_prompt = f"""
 A full-body photo of a person wearing {prompt}, stylish outfit,
 high-quality fashion photography, natural lighting, street style, minimal background.
 """
 
-payload = {"inputs": full_prompt}
-response = requests.post(api_url, headers=headers, json=payload)
+    payload = {"inputs": full_prompt}
+    response = requests.post(api_url, headers=headers, json=payload)
 
-if response.status_code != 200:
-st.warning(f"⚠️ 画像生成に失敗しました: {response.text}")
-return None
+    if response.status_code != 200:
+        st.warning(f"⚠️ 画像生成に失敗しました: {response.text}")
+        return None
 
-return response.content
+    return response.content
 
 
 # ===============================
