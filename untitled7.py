@@ -84,7 +84,7 @@ def ai_stylist(keyword, city="Tokyo"):
 # ===============================
 def generate_outfit_image(prompt):
    api_url = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0"
-    headers = {"Authorization": f"Bearer {HUGGINGFACE_TOKEN}"}
+   headers = {"Authorization": f"Bearer {HUGGINGFACE_TOKEN}"}
 
     # ファッション誌のようなリアルでおしゃれな画像を生成
     full_prompt = f"""
