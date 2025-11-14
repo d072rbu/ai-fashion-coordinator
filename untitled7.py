@@ -92,8 +92,8 @@ A full-body photo of a person wearing {prompt}, stylish outfit,
 high-quality fashion photography, natural lighting, street style, minimal background.
 """
 
-    payload = {"inputs": full_prompt}
-    response = requests.post(api_url, headers=headers, json=payload)
+payload = {"inputs": full_prompt}
+response = requests.post(api_url, headers=headers, json=payload)
 
     if response.status_code != 200:
         st.warning(f"⚠️ 画像生成に失敗しました: {response.text}")
