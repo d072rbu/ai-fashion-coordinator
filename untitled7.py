@@ -39,8 +39,8 @@ def ai_stylist(keyword, city="Tokyo"):
 - [ユーザーのキーワード] に合うコーディネートを提案してください。
 - enzoblueの雰囲気（ミニマル、アーバン、ユニセックス、ニュートラルカラー、モード×ストリート）を参考にしてください。
 - シルエットや素材感、色の組み合わせを詳しく説明してください。
-- 画像生成用に、一文で「着ている服の色・形・素材」をまとめてください。
-- 性別は「young woman」にしてください。
+- 画像生成用に、一文で「服の色・形・素材」をまとめてください。
+- 性別は無視、人物は不要、ハンガーにかけた状態で表示するイメージにしてください。
 - 最後に前向きな一言を添えて。
 """
     elif "デート" in keyword_lower or "可愛い" in keyword_lower:
@@ -53,8 +53,8 @@ def ai_stylist(keyword, city="Tokyo"):
 [指示]
 ・デートやお出かけにぴったりな、優しくて柔らかい印象のコーデを提案してください。
 ・パステルカラーやシフォン、リネン素材を上品に組み合わせてください。
-・画像生成用に、一文で「着ている服の色・形・素材」をまとめてください。
-・性別は「young woman」にしてください。
+・画像生成用に、一文で「服の色・形・素材」をまとめてください。
+・人物は不要、ハンガーにかけた状態で表示するイメージにしてください。
 ・最後にポジティブな一言を添えて。
 """
     else:
@@ -68,8 +68,8 @@ def ai_stylist(keyword, city="Tokyo"):
 ・シンプルで洗練された、クールな大人のコーデを提案してください。
 ・無駄を省きつつ、素材感とシルエットで高見えするスタイルにしてください。
 ・白・黒・ベージュ・グレーなどのニュートラルカラーを基調にしてください。
-・画像生成用に、一文で「着ている服の色・形・素材」をまとめてください。
-・性別は「young woman」にしてください。
+・画像生成用に、一文で「服の色・形・素材」をまとめてください。
+・人物は不要、ハンガーにかけた状態で表示するイメージにしてください。
 ・最後に前向きな一言を添えてください。
 """
 
@@ -83,17 +83,15 @@ def ai_stylist(keyword, city="Tokyo"):
     return style, text
 
 # ===============================
-# 🎨 コーデ画像生成（Stable Diffusion）
+# 🎨 服だけ画像生成（ハンガー表示）
 # ===============================
 def generate_outfit_image(coord_text):
     api_url = "https://router.huggingface.co/hf-inference/models/stabilityai/stable-diffusion-xl-base-1.0"
     headers = {"Authorization": f"Bearer {HUGGINGFACE_TOKEN}"}
 
-    # 性別と表情を指定して怖くならないようにする
     full_prompt = f"""
-Full-body photo of a young woman wearing {coord_text}, stylish outfit, 
-soft friendly expression, smiling face, realistic and photorealistic, 
-natural lighting, street style, minimal background, standing straight, natural pose
+Fashion outfit only: {coord_text}, displayed on hangers, high-quality fashion photography,
+studio lighting, realistic textures, minimal background, no person
 """
 
     payload = {
@@ -115,7 +113,7 @@ natural lighting, street style, minimal background, standing straight, natural p
 # 💙 Streamlit UI
 # ===============================
 st.title("💙 AIファッションアドバイザー 🎨")
-st.write("🌤️ 天気と気分から今日のコーデと画像を提案します！")
+st.write("🌤️ 天気と気分から今日のコーデと画像を提案します！（人物なし・服だけ）")
 
 keyword = st.text_input("💬 今日のキーワードを入力（例：デート、韓国、カジュアル）")
 
@@ -127,9 +125,9 @@ if st.button("コーデを提案して！ 💙"):
         st.write(f"💫 スタイルタイプ: {style}\n\n{coord_text}")
 
         # 画像生成
-        st.subheader("🎨 イメージ画像")
+        st.subheader("🎨 イメージ画像（ハンガーにかけた服）")
         image = generate_outfit_image(coord_text)
         if image:
-            st.image(image, caption="今日のおすすめコーデ", use_container_width=True)
+            st.image(image, caption="今日のおすすめコーデ（服だけ）", use_container_width=True)
         else:
             st.warning("⚠️ 画像を表示できませんでした。")
