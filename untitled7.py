@@ -37,11 +37,11 @@ def ai_stylist(keyword, city="Tokyo"):
 
 [指示]
 - [ユーザーのキーワード] に合うコーディネートを提案してください。
-- enzoblueのような雰囲気（ミニマル、アーバン、ユニセックス、ニュートラルカラー、モード × ストリートのバランス）を参考にしてください。
-- シルエットや素材感、色の組み合わせを詳しく説明し、自然で洗練されたスタイルに。
-- 性別は固定せず、誰でも真似できるスタイルに。
+- enzoblueの雰囲気（ミニマル、アーバン、ユニセックス、ニュートラルカラー、モード×ストリート）を参考にしてください。
+- シルエットや素材感、色の組み合わせを詳しく説明してください。
 - 画像生成用に、一文で「着ている服の色・形・素材」をまとめてください。
-- 最後に“今日のスタイルで自信を持って歩こう”のような一言を添えて。
+- 性別は固定せず、誰でも真似できるスタイルに。
+- 最後に前向きな一言を添えて。
 """
     elif "デート" in keyword_lower or "可愛い" in keyword_lower:
         style = "フェミニンナチュラル系"
@@ -53,7 +53,6 @@ def ai_stylist(keyword, city="Tokyo"):
 [指示]
 ・デートやお出かけにぴったりな、優しくて柔らかい印象のコーデを提案してください。
 ・パステルカラーやシフォン、リネン素材を上品に組み合わせてください。
-・全体の統一感とかわいさを意識して。
 ・画像生成用に、一文で「着ている服の色・形・素材」をまとめてください。
 ・最後にポジティブな一言を添えて。
 """
@@ -66,8 +65,8 @@ def ai_stylist(keyword, city="Tokyo"):
 
 [指示]
 ・シンプルで洗練された、クールな大人のコーデを提案してください。
-・無駄を省きながらも、素材感とシルエットで高見えするスタイルに。
-・白・黒・ベージュ・グレーなどのニュートラルカラーを基調に。
+・無駄を省きつつ、素材感とシルエットで高見えするスタイルにしてください。
+・白・黒・ベージュ・グレーなどのニュートラルカラーを基調にしてください。
 ・画像生成用に、一文で「着ている服の色・形・素材」をまとめてください。
 ・最後に前向きな一言を添えてください。
 """
@@ -88,10 +87,10 @@ def generate_outfit_image(coord_text):
     api_url = "https://router.huggingface.co/hf-inference/models/stabilityai/stable-diffusion-xl-base-1.0"
     headers = {"Authorization": f"Bearer {HUGGINGFACE_TOKEN}"}
 
-    # OpenAIが作った画像用テキストをそのまま使用
+    # 顔とポーズも自然になるようキーワード追加
     full_prompt = f"""
-Full-body photo of a person wearing {coord_text}, stylish outfit,
-high-quality fashion photography, natural lighting, street style, minimal background.
+Full-body photo of a person wearing {coord_text}, stylish outfit, realistic face with soft friendly expression,
+photorealistic, natural lighting, street style, minimal background, standing straight, natural pose
 """
 
     payload = {
