@@ -40,7 +40,7 @@ def ai_stylist(keyword, city="Tokyo"):
 - enzoblueの雰囲気（ミニマル、アーバン、ユニセックス、ニュートラルカラー、モード×ストリート）を参考にしてください。
 - シルエットや素材感、色の組み合わせを詳しく説明してください。
 - 画像生成用に、一文で「着ている服の色・形・素材」をまとめてください。
-- 性別は固定せず、誰でも真似できるスタイルに。
+- 性別は「young woman」にしてください。
 - 最後に前向きな一言を添えて。
 """
     elif "デート" in keyword_lower or "可愛い" in keyword_lower:
@@ -54,6 +54,7 @@ def ai_stylist(keyword, city="Tokyo"):
 ・デートやお出かけにぴったりな、優しくて柔らかい印象のコーデを提案してください。
 ・パステルカラーやシフォン、リネン素材を上品に組み合わせてください。
 ・画像生成用に、一文で「着ている服の色・形・素材」をまとめてください。
+・性別は「young woman」にしてください。
 ・最後にポジティブな一言を添えて。
 """
     else:
@@ -68,6 +69,7 @@ def ai_stylist(keyword, city="Tokyo"):
 ・無駄を省きつつ、素材感とシルエットで高見えするスタイルにしてください。
 ・白・黒・ベージュ・グレーなどのニュートラルカラーを基調にしてください。
 ・画像生成用に、一文で「着ている服の色・形・素材」をまとめてください。
+・性別は「young woman」にしてください。
 ・最後に前向きな一言を添えてください。
 """
 
@@ -87,10 +89,11 @@ def generate_outfit_image(coord_text):
     api_url = "https://router.huggingface.co/hf-inference/models/stabilityai/stable-diffusion-xl-base-1.0"
     headers = {"Authorization": f"Bearer {HUGGINGFACE_TOKEN}"}
 
-    # 顔とポーズも自然になるようキーワード追加
+    # 性別と表情を指定して怖くならないようにする
     full_prompt = f"""
-Full-body photo of a person wearing {coord_text}, stylish outfit, realistic face with soft friendly expression,
-photorealistic, natural lighting, street style, minimal background, standing straight, natural pose
+Full-body photo of a young woman wearing {coord_text}, stylish outfit, 
+soft friendly expression, smiling face, realistic and photorealistic, 
+natural lighting, street style, minimal background, standing straight, natural pose
 """
 
     payload = {
