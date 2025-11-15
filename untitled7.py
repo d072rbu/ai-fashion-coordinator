@@ -40,6 +40,7 @@ def ai_stylist(keyword, city="Tokyo"):
 - enzoblueのような雰囲気（ミニマル、アーバン、ユニセックス、ニュートラルカラー、モード × ストリートのバランス）を参考にしてください。
 - シルエットや素材感、色の組み合わせを詳しく説明し、自然で洗練されたスタイルに。
 - 性別は固定せず、誰でも真似できるスタイルに。
+- 画像生成用に、一文で「着ている服の色・形・素材」をまとめてください。
 - 最後に“今日のスタイルで自信を持って歩こう”のような一言を添えて。
 """
     elif "デート" in keyword_lower or "可愛い" in keyword_lower:
@@ -53,6 +54,7 @@ def ai_stylist(keyword, city="Tokyo"):
 ・デートやお出かけにぴったりな、優しくて柔らかい印象のコーデを提案してください。
 ・パステルカラーやシフォン、リネン素材を上品に組み合わせてください。
 ・全体の統一感とかわいさを意識して。
+・画像生成用に、一文で「着ている服の色・形・素材」をまとめてください。
 ・最後にポジティブな一言を添えて。
 """
     else:
@@ -66,6 +68,7 @@ def ai_stylist(keyword, city="Tokyo"):
 ・シンプルで洗練された、クールな大人のコーデを提案してください。
 ・無駄を省きながらも、素材感とシルエットで高見えするスタイルに。
 ・白・黒・ベージュ・グレーなどのニュートラルカラーを基調に。
+・画像生成用に、一文で「着ている服の色・形・素材」をまとめてください。
 ・最後に前向きな一言を添えてください。
 """
 
@@ -78,16 +81,16 @@ def ai_stylist(keyword, city="Tokyo"):
     text = response.choices[0].message.content
     return style, text
 
-
 # ===============================
 # 🎨 コーデ画像生成（Stable Diffusion）
 # ===============================
-def generate_outfit_image(prompt):
+def generate_outfit_image(coord_text):
     api_url = "https://router.huggingface.co/hf-inference/models/stabilityai/stable-diffusion-xl-base-1.0"
     headers = {"Authorization": f"Bearer {HUGGINGFACE_TOKEN}"}
 
+    # OpenAIが作った画像用テキストをそのまま使用
     full_prompt = f"""
-A full-body photo of a person wearing {prompt}, stylish outfit,
+Full-body photo of a person wearing {coord_text}, stylish outfit,
 high-quality fashion photography, natural lighting, street style, minimal background.
 """
 
@@ -100,14 +103,11 @@ high-quality fashion photography, natural lighting, street style, minimal backgr
     }
 
     response = requests.post(api_url, headers=headers, json=payload)
-
     if response.status_code != 200:
         st.warning(f"⚠️ 画像生成に失敗しました: {response.text}")
         return None
 
     return response.content
-
-
 
 # ===============================
 # 💙 Streamlit UI
@@ -119,14 +119,14 @@ keyword = st.text_input("💬 今日のキーワードを入力（例：デー�
 
 if st.button("コーデを提案して！ 💙"):
     with st.spinner("AIが考え中です...💭"):
-        # テキスト提案
+        # コーデテキスト生成
         style, coord_text = ai_stylist(keyword)
         st.subheader("👗 今日のコーデ提案")
         st.write(f"💫 スタイルタイプ: {style}\n\n{coord_text}")
 
         # 画像生成
         st.subheader("🎨 イメージ画像")
-        image = generate_outfit_image(f"{style}, {keyword} fashion outfit")
+        image = generate_outfit_image(coord_text)
         if image:
             st.image(image, caption="今日のおすすめコーデ", use_container_width=True)
         else:
