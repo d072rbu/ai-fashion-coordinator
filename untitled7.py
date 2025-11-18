@@ -1,8 +1,6 @@
-
 import streamlit as st
 from openai import OpenAI
 import requests
-import base64
 
 # ===============================
 # 🔑 Secrets 読み込み
@@ -71,7 +69,7 @@ def ai_stylist(keyword, city="Tokyo"):
     return style, text
 
 # ===============================
-# 🎨 服画像生成（SDXL）
+# 🎨 服画像生成（SDXL / Router API）
 # ===============================
 def generate_outfit_image(coord_text):
     api_url = "https://router.huggingface.co/hf-inference/models/stabilityai/stable-diffusion-xl-base-1.0"
@@ -99,64 +97,12 @@ Fashion outfit only on hanger, no human, no body, high-quality studio photo.
     return response.content
 
 # ===============================
-# 🧊 2D → 3D モデル化（TripoSR）
-# ===============================
-def convert_to_3d(image_bytes):
-    api_url = "https://router.huggingface.co/hf-inference/models/stabilityai/stable-fast-3d"
-    headers = {"Authorization": f"Bearer {HUGGINGFACE_TOKEN}"}
-
-    files = {"file": ("input.png", image_bytes, "image/png")}
-    res = requests.post(api_url, headers=headers, files=files)
-
-    if res.status_code != 200:
-        st.error(f"3Dモデル生成失敗: {res.text}")
-        return None
-
-    return res.content  # .glb
-
-# ===============================
-# 🌀 Three.js Viewer 埋め込み
-# ===============================
-def show_3d_model(glb_bytes):
-    glb_b64 = base64.b64encode(glb_bytes).decode()
-
-    st.components.v1.html(f"""
-    <canvas id="c" style="width:100%; height:400px;"></canvas>
-    <script type="module">
-        import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.module.js';
-        import {{ GLTFLoader }} from 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/loaders/GLTFLoader.js';
-
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(45, 1.6, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({{ canvas: document.getElementById('c'), antialias: true }});
-        renderer.setSize(window.innerWidth, 400);
-
-        const light = new THREE.HemisphereLight(0xffffff, 0x444444, 1);
-        scene.add(light);
-
-        const loader = new GLTFLoader();
-        loader.parse(atob("{glb_b64}"), "", function (gltf) {{
-            const model = gltf.scene;
-            scene.add(model);
-            camera.position.z = 2;
-
-            function animate() {{
-                requestAnimationFrame(animate);
-                model.rotation.y += 0.01;  // 自動回転
-                renderer.render(scene, camera);
-            }}
-            animate();
-        }});
-    </script>
-    """, height=450)
-
-# ===============================
 # 💙 Streamlit UI
 # ===============================
-st.title("💙 AIファッションアドバイザー（3D対応） 🎨👗")
-st.write("AIが服を作って、それを3Dモデル化して360°回転させます！")
+st.title("💙 AIファッションアドバイザー 🎨")
+st.write("🌤️ 今日のコーデを提案！（人物なし・服だけ）")
 
-keyword = st.text_input("今日のキーワード（例：韓国、デート、モード）")
+keyword = st.text_input("💬 今日のキーワードを入力（例：デート、韓国、カジュアル）")
 
 if st.button("コーデを提案して！ 💙"):
     with st.spinner("AIがコーデを考えています…"):
@@ -169,22 +115,5 @@ if st.button("コーデを提案して！ 💙"):
         img_bytes = generate_outfit_image(coord_text)
         if img_bytes:
             st.image(img_bytes, caption="生成した服（2D画像）", use_container_width=True)
-
-    with st.spinner("3Dモデルを作成中…（30秒ほど）"):
-        glb = convert_to_3d(img_bytes)
-        if glb:
-            st.subheader("🌀 360°回転 3Dモデル")
-            show_3d_model(glb)
-
-
-
-
-
-
-
-
-
-
-
-
-
+        else:
+            st.warning("⚠️ 画像を表示できませんでした。")
