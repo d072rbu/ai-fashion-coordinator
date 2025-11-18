@@ -1,6 +1,7 @@
 import streamlit as st
 from openai import OpenAI
 import requests
+import base64
 
 # ===============================
 # 🔑 Secrets 読み込み
@@ -94,6 +95,16 @@ Fashion outfit only on hanger, no human, no body, high-quality studio photo.
         st.warning(f"⚠️ 画像生成失敗: {response.text}")
         return None
 
+    # Router API は JSON で返す場合があるので対応
+    try:
+        result = response.json()
+        if "generated_image" in result:
+            image_bytes = base64.b64decode(result["generated_image"])
+            return image_bytes
+    except:
+        pass
+
+    # バイナリ直接返却の場合
     return response.content
 
 # ===============================
