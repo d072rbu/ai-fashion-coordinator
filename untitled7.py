@@ -1,35 +1,18 @@
-# -*- coding: utf-8 -*-
-"""AIファッションアドバイザー (安全版)"""
-
-# ===============================
-# ✅ 必要なライブラリをインストール
-# ===============================
-# ColabやStreamlit Cloudで動かすときに自動でインストールされるようにする
-!pip install openai requests
-
-# ===============================
-# ✅ モジュールをインポート
-# ===============================
-import os
+import streamlit as st
 from openai import OpenAI
 import requests
-from IPython.display import Image, display
 
 # ===============================
-# 🔒 APIキーを安全に読み込む
+# ☁️ APIキーの読み込み
 # ===============================
-# 環境変数 (Colabの場合はランタイムで設定 / Streamlitの場合は「secrets」で設定)
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-OPENWEATHER_KEY = os.getenv("OPENWEATHER_KEY")
-
-# ✅ 確認（キーが設定されていない場合にエラー表示）
-if not OPENAI_API_KEY or not OPENWEATHER_KEY:
-    raise ValueError("❌ APIキーが設定されていません。Colabなら os.environ で、Streamlitなら secrets.toml に設定してください。")
+OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
+OPENWEATHER_KEY = st.secrets["OPENWEATHER_KEY"]
+HUGGINGFACE_TOKEN = st.secrets["HUGGINGFACE_TOKEN"]
 
 client = OpenAI(api_key=OPENAI_API_KEY)
 
 # ===============================
-# ☁️ 天気を取得する関数
+# 💙 天気取得
 # ===============================
 def get_weather(city="Tokyo"):
     url = f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={OPENWEATHER_KEY}&units=metric&lang=ja"
@@ -39,47 +22,111 @@ def get_weather(city="Tokyo"):
     return f"{city}の天気は{desc}、気温は{temp}℃です。"
 
 # ===============================
-# 👚 AIにコーデ提案をしてもらう関数
+# 👚 コーデ提案（OpenAI）
 # ===============================
 def ai_stylist(keyword, city="Tokyo"):
     weather = get_weather(city)
-    prompt = f"""
+    keyword_lower = keyword.lower()
+
+    if "enzoblue" in keyword_lower or "モード" in keyword_lower or "韓国" in keyword_lower:
+        style = "モード×ミニマルストリート（Enzoblue系）"
+        style_desc = f"""
+あなたは韓国・ソウルの人気セレクトショップ『ENZOBLUE』のスタイリストです。
 今日の{weather}
 キーワード: {keyword}
 
-この条件にぴったりのファッションコーデを提案して。
-具体的な服の組み合わせと理由を説明して。
-最後にポジティブな一言で締めて！
+[指示]
+- [ユーザーのキーワード] に合うコーディネートを提案してください。
+- enzoblueの雰囲気（ミニマル、アーバン、ニュートラルカラー、モード×ストリート）を参考にしてください。
+- シルエットや素材感、色の組み合わせを詳しく説明してください。
+- 画像生成用に、一文で「服の色・形・素材」をまとめてください。
+- 人物は不要、ハンガーにかけた状態で表示するイメージにしてください。
+- 最後に前向きな一言を添えて。
 """
+    elif "デート" in keyword_lower or "可愛い" in keyword_lower:
+        style = "フェミニンナチュラル系"
+        style_desc = f"""
+あなたは韓国の人気スタイリストです。
+今日の{weather}
+キーワード: {keyword}
+
+[指示]
+・デートやお出かけにぴったりな、優しくて柔らかい印象のコーデを提案してください。
+・パステルカラーやシフォン、リネン素材を上品に組み合わせてください。
+・画像生成用に、一文で「服の色・形・素材」をまとめてください。
+・人物は不要、ハンガーにかけた状態で表示するイメージにしてください。
+・最後にポジティブな一言を添えて。
+"""
+    else:
+        style = "シンプルクール系"
+        style_desc = f"""
+あなたは韓国のファッション誌『VOGUE Korea』のスタイリストです。
+今日の{weather}
+キーワード: {keyword}
+
+[指示]
+・シンプルで洗練されたコーデを提案してください。
+・無駄を省きつつ、素材感とシルエットで高見えするスタイルにしてください。
+・画像生成用に、一文で「服の色・形・素材」をまとめてください。
+・人物は不要、ハンガーにかけた状態で表示するイメージにしてください。
+・最後に前向きな一言を添えてください。
+"""
+
     response = client.chat.completions.create(
         model="gpt-4o-mini",
-        messages=[{"role": "user", "content": prompt}]
+        messages=[{"role": "user", "content": style_desc}]
     )
-    return response.choices[0].message.content
+
+    text = response.choices[0].message.content
+    return style, text
 
 # ===============================
-# 🎨 コーデ画像を生成する関数
+# 🎨 服だけ画像生成（ハンガー表示・人物ゼロ）
 # ===============================
-def generate_image(description):
-    image_prompt = f"{description}, おしゃれな全身コーデ, リアルな人物, 明るい背景, 韓国風"
-    image = client.images.generate(
-        model="gpt-image-1",
-        prompt=image_prompt,
-        size="1024x1024"
-    )
-    url = image.data[0].url
-    return url
+def generate_outfit_image(coord_text):
+    api_url = "https://router.huggingface.co/hf-inference/models/stabilityai/stable-diffusion-xl-base-1.0"
+    headers = {"Authorization": f"Bearer {HUGGINGFACE_TOKEN}"}
+
+    full_prompt = f"""
+Fashion outfit only: {coord_text}, displayed on hangers or mannequin, high-quality fashion photography,
+studio lighting, realistic textures, minimal background, no person, no human, clothing only
+"""
+
+    payload = {
+        "inputs": full_prompt,
+        "parameters": {
+            "num_inference_steps": 30,
+            "guidance_scale": 7.0,
+            "negative_prompt": "person, human, face, head, body, model"
+        }
+    }
+
+    response = requests.post(api_url, headers=headers, json=payload)
+    if response.status_code != 200:
+        st.warning(f"⚠️ 画像生成に失敗しました: {response.text}")
+        return None
+
+    return response.content
 
 # ===============================
-# 💬 実行部分
+# 💙 Streamlit UI
 # ===============================
-keyword = input("今日の気分やキーワードを入力してね（例：デート、韓国っぽ、カジュアル）👉 ")
+st.title("💙 AIファッションアドバイザー 🎨")
+st.write("🌤️ 今日のコーデを提案！（人物なし・服だけ・ハンガー表示）")
 
-coord_text = ai_stylist(keyword)
-print("🧥 今日のAIコーデ提案:\n")
-print(coord_text)
+keyword = st.text_input("💬 今日のキーワードを入力（例：デート、韓国、カジュアル）")
 
-print("\n🎨 コーデ画像生成中...")
-image_url = generate_image(coord_text)
-display(Image(url=image_url))
-print(f"🖼️ 参考画像URL: {image_url}")
+if st.button("コーデを提案して！ 💙"):
+    with st.spinner("AIが考え中です...💭"):
+        # コーデテキスト生成
+        style, coord_text = ai_stylist(keyword)
+        st.subheader("👗 今日のコーデ提案")
+        st.write(f"💫 スタイルタイプ: {style}\n\n{coord_text}")
+
+        # 画像生成
+        st.subheader("🎨 イメージ画像（ハンガーにかけた服・人物ゼロ）")
+        image = generate_outfit_image(coord_text)
+        if image:
+            st.image(image, caption="今日のおすすめコーデ（服だけ）", use_container_width=True)
+        else:
+            st.warning("⚠️ 画像を表示できませんでした。")
