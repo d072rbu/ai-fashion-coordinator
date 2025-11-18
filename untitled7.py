@@ -97,23 +97,28 @@ Fashion outfit only on hanger, no human, no body, high-quality studio photo.
     return response.content
 
 # ===============================
-# 💙 Streamlit UI
+# 💖 Streamlit UI
 # ===============================
-st.title("💙 AIファッションアドバイザー 🎨")
-st.write("🌤️ 今日のコーデを提案！（人物なし・服だけ）")
+st.set_page_config(page_title="💖 AIファッションコーデアプリ", page_icon="👗")
 
-keyword = st.text_input("💬 今日のキーワードを入力（例：デート、韓国、カジュアル）")
+st.title("💖 AIファッションコーデアプリ 👗")
+st.write("今日はどんな服を着ようかな？キーワードを入れてね♪")
 
-if st.button("コーデを提案して！ 💙"):
-    with st.spinner("AIがコーデを考えています…"):
-        style, coord_text = ai_stylist(keyword)
-        st.subheader("👗 今日のコーデ提案")
-        st.write(f"💫 スタイル: {style}")
-        st.write(coord_text)
+keyword = st.text_input("💬 キーワード（例：韓国、デート、モード）")
 
-    with st.spinner("服の画像を生成中…"):
-        img_bytes = generate_outfit_image(coord_text)
-        if img_bytes:
-            st.image(img_bytes, caption="生成した服（2D画像）", use_container_width=True)
-        else:
-            st.warning("⚠️ 画像を表示できませんでした。")
+if st.button("コーデを作る！ ✨"):
+    if not keyword.strip():
+        st.warning("キーワードを入力してね！")
+    else:
+        with st.spinner("AIがコーデを考えています…💭"):
+            style, coord_text = ai_stylist(keyword)
+            st.subheader("👗 今日のコーデ提案")
+            st.write(f"💫 スタイル: {style}")
+            st.write(coord_text)
+
+        with st.spinner("服の画像を生成中…🎨"):
+            img_bytes = generate_outfit_image(coord_text)
+            if img_bytes:
+                st.image(img_bytes, caption="生成した服（ハンガー表示）", use_container_width=True)
+            else:
+                st.warning("⚠️ 画像を表示できませんでした。")
