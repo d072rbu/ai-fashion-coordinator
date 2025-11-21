@@ -27,8 +27,6 @@ def get_weather(city="Tokyo"):
 # ===============================
 def ai_stylist(keyword, city="Tokyo", mood_color=None):
     weather = get_weather(city)
-    keyword_lower = keyword.lower()
-
     style = "シンプルクール系"
     prompt = f"""
 あなたはVOGUEのスタイリストです。
@@ -77,16 +75,38 @@ Fashion outfit only on hanger, no human, no body, high-quality studio photo.
 # ===============================
 # 💙 Streamlit UI
 # ===============================
+st.set_page_config(page_title="AIファッションアドバイザー", layout="centered")
 st.title("💙 AIファッションアドバイザー 🎨")
+
+# 背景色とボタンのカスタマイズ
+st.markdown(
+    """
+    <style>
+    body { background-color: #FFF8F0; }
+    .stButton>button { background-color: #FF69B4; color: white; font-weight: bold; }
+    </style>
+    """, unsafe_allow_html=True
+)
+
+# 今日の気分カラー選択
+mood_color = st.color_picker("🎨 今日の気分カラーを選んでね")
 
 keyword = st.text_input("💬 今日のキーワードを入力（例：デート、韓国、カジュアル）")
 
 if st.button("コーデを提案して！ 💙"):
     with st.spinner("AIがコーデを考えています…"):
-        style, coord_text = ai_stylist(keyword)
-        st.markdown("### 👗 今日のコーデ提案")
-        st.write(coord_text)
-        st.markdown("---")
+        style, coord_text = ai_stylist(keyword, mood_color=mood_color)
+
+        # カード風UI
+        st.markdown(
+            f"""
+            <div style='padding:15px; border:2px solid #FF69B4; border-radius:15px; background-color:#FFF0F5'>
+                <h3>👗 今日のコーデ提案</h3>
+                <p>{coord_text}</p>
+                <p>💫 スタイル: {style}</p>
+            </div>
+            """, unsafe_allow_html=True
+        )
 
     with st.spinner("服の画像を生成中…"):
         img_bytes = generate_outfit_image(coord_text)
