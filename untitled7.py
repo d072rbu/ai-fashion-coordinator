@@ -23,7 +23,7 @@ def get_weather(city="Tokyo"):
 
 # ===============================
 # 👚 コーデ生成"
-        prompt = f"""
+    prompt = f"""
 あなたは世界で活躍するトップスタイリストです。
 今日の{weather}
 キーワード: {keyword}
