@@ -1,141 +1,34 @@
-import streamlit as st
-from openai import OpenAI
-import requests
-import random
-from PIL import Image
-from io import BytesIO
+# ... (省略) ...
 
 # ===============================
-# 🔑 Secrets 読み込み
-# ===============================
-# ... (Secrets の部分は省略) ...
-# OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
-# OPENWEATHER_KEY = st.secrets["OPENWEATHER_KEY"]
-# HUGGINGFACE_TOKEN = st.secrets["HUGGINGFACE_TOKEN"]
-
-# client = OpenAI(api_key=OPENAI_API_KEY)
-
-# ===============================
-# 🌤️ 天気取得（変更なし）
-# ===============================
-def get_weather(city="Tokyo"):
-    # ... (既存の関数) ...
-    # ダミーの戻り値
-    return f"{city}の天気は晴れ、気温は22.5℃です。"
-
-# ===============================
-# 👚 コーデ生成（OpenAI）（変更なし）
+# 👚 コーデ生成（OpenAI）
 # ===============================
 def ai_stylist(keyword, city="Tokyo"):
-    # ... (既存の関数) ...
-    # ダミーの戻り値
-    style = "フェミニンカジュアル"
-    text = "今日は、薄いミントグリーンのニットに、アイボリーのプリーツスカートを合わせた、柔らかなフェミニンカジュアルはいかがでしょうか。足元は白のローファーで軽やかに。軽やかな春の風を感じるような、優しい印象のコーディネートです。"
-    return style, text
+    weather = get_weather(city) # 天気情報を取得
+    style = "シンプルクール系"
+    prompt = f"""
+あなたはVOGUEのスタイリストです。
+今日の{city}の天気は{weather}です。
+キーワード: {keyword}を考慮して、以下の条件でコーデを提案してください。
 
-# ===============================
-# 🎨 服画像生成（SDXL / Router API）（変更なし）
-# ===============================
-def generate_outfit_image(coord_text):
-    # ... (既存の関数。画像生成に時間がかかるため、ダミー画像の使用を推奨します。) ...
-    # ダミーの戻り値 (実際には画像を返すようにしてください)
-    try:
-        # 実際に画像生成APIを叩く処理
-        # ...
-        # response = requests.post(api_url, headers=headers, json=payload)
-        # return response.content
-        
-        # 開発中の場合はダミーの画像を返す
-        # 小さな透過PNGなどのバイト列を返す必要がありますが、ここでは省略
-        return None
-    except:
-        return None
+- {weather}に合う、シンプルで洗練されたコーデ。
+- どんなシーンに合うか、具体的なアドバイスも加えてください。
+"""
+
+    res = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[{"role": "user", "content": prompt}]
+    )
+
+    text = res.choices[0].message.content
+    return style, text, weather # <<-- 天気情報も一緒に返すように変更
+
+# ... (省略) ...
 
 # ===============================
 # 💙 Streamlit UI
 # ===============================
-# ページ設定を可愛らしく
-st.set_page_config(
-    page_title="きらきら AIファッションアドバイザー", 
-    layout="centered", 
-    initial_sidebar_state="collapsed",
-    page_icon="💖"
-)
-
-# --------------------------------------------------------------------------------
-# ✨ CSSで可愛くデザイン（ここで大幅に可愛くします！）
-# --------------------------------------------------------------------------------
-st.markdown(
-    """
-    <style>
-    /* 背景色をより淡いピンクに */
-    .stApp {
-        background-color: #F8F4F8; /* 少しグレイッシュなピンク */
-        color: #4A4A4A;
-        font-family: 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
-    }
-    /* タイトル */
-    .stTitle {
-        color: #E91E63; /* マゼンタ系でキュートに */
-        text-align: center;
-        margin-bottom: 20px;
-        text-shadow: 1px 1px 3px #FFC1E3; /* タイトルに可愛い影 */
-    }
-    /* ボタンのスタイルをさらに可愛く */
-    div.stButton > button:first-child {
-        background-color: #FF69B4; /* ホットピンク */
-        color: #FFFFFF;
-        font-weight: bold;
-        border-radius: 20px; /* 角丸を大きく */
-        padding: 10px 30px;
-        box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1); /* 影をつけて立体感 */
-        border: none;
-        transition: all 0.2s ease;
-    }
-    div.stButton > button:first-child:hover {
-        background-color: #FFB6C1; /* ホバーで色を少し明るく */
-        color: #E91E63;
-        box-shadow: 0 0 10px #FFB6C1;
-    }
-    /* テキスト入力欄のスタイル */
-    div[data-testid="stTextInput"] > div > div > input {
-        border-radius: 15px;
-        border: 2px solid #FFC0CB; /* 薄いピンクの枠線 */
-        padding: 10px;
-        box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.05);
-    }
-    /* コーデ提案ボックスのスタイル（より柔らかく） */
-    .coord-card {
-        padding: 25px; 
-        border: 3px solid #FFC0CB; /* 薄いピンクの太い枠線 */
-        border-radius: 25px; 
-        background-color: #FFFFFF; /* 白い背景で清潔感 */
-        color: #4A4A4A;
-        box-shadow: 4px 4px 10px rgba(255, 105, 180, 0.2); /* ピンク系の大きな影 */
-        margin-top: 20px;
-    }
-    .coord-card h3 {
-        color: #E91E63;
-        border-bottom: 2px dashed #FFC0CB; /* 点線の下線 */
-        padding-bottom: 10px;
-        margin-bottom: 15px;
-    }
-    </style>
-    """, unsafe_allow_html=True
-)
-# --------------------------------------------------------------------------------
-
-st.title("💖 きらきら AIファッションアドバイザー ✨")
-
-# 入力欄を中央に寄せて、ラベルを非表示に
-keyword = st.text_input(
-    label="今日のキーワードを入力してください", 
-    placeholder="例：デート、カジュアル、モード系",
-    label_visibility="collapsed"
-)
-
-# ヘルプメッセージを可愛く
-st.caption("💬 上のボックスに、着たい服のイメージや、行く場所を入力してね！")
+# ... (省略) ...
 
 if st.button("コーデを提案して！ 💖"):
     # キーワードが空の場合は警告
@@ -143,7 +36,16 @@ if st.button("コーデを提案して！ 💖"):
         st.warning("キーワードを入力してください！😊")
     else:
         with st.spinner("AIが可愛くコーデを考えています…"):
-            style, coord_text = ai_stylist(keyword)
+            style, coord_text, current_weather = ai_stylist(keyword) # <<-- 天気情報も受け取る
+
+        # 天気情報を可愛く表示するセクションを追加
+        st.markdown(f"""
+            <div style='padding:15px; border:2px dashed #B0E0E6; border-radius:15px; background-color:#F0F8FF; color:#4A4A4A; text-align:center; margin-bottom:20px;'>
+                <h4>今日の天気予報 ☀️</h4>
+                <p>📍 {current_weather}</p>
+            </div>
+        """, unsafe_allow_html=True)
+
 
         # カード風UIを新しいCSSクラスで表示
         st.markdown(
@@ -162,13 +64,23 @@ if st.button("コーデを提案して！ 💖"):
         with st.spinner("服の画像を生成中… ちょっと待ってね！"):
             img_bytes = generate_outfit_image(coord_text)
             
-            # ダミー画像（実際の環境ではAPIの戻り値を使う）
-            if img_bytes is None:
-                st.info("⚠️ 画像生成APIが応答しないため、ダミー画像を表示します。")
-                # ユーザーが理解できるように、ダミー画像の説明を追記
-                st.image("https://images.unsplash.com/photo-1542037104857-ffbb0b91d798?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", caption="（ダミー）生成された服のイメージ", use_container_width=True)
+            if img_bytes:
+                st.image(img_bytes, caption="✨ あなただけのコーデが完成！ ✨", use_container_width=True) # キャプションも可愛く
             else:
-                st.image(img_bytes, caption="生成した服（2D画像）", use_container_width=True)
+                # 画像生成に失敗した場合のダミー画像を可愛く表示
+                st.warning("⚠️ ごめんなさい！服の画像を生成できませんでした。")
+                st.markdown(
+                    """
+                    <div style='text-align:center; margin-top:15px;'>
+                        <p>でも、コーデのアイデアはとっても素敵だよ！✨</p>
+                        <img src="https://images.unsplash.com/photo-1558230501-460d37e3d231?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
+                             style="width:80%; max-width:400px; border-radius:15px; box-shadow: 3px 3px 8px rgba(0,0,0,0.1);" 
+                             alt="コーデイメージ">
+                        <p style="font-size:0.8em; color:#888;">（イメージ画像です）</p>
+                    </div>
+                    """, unsafe_allow_html=True
+                )
+
 
         # ランダムポジティブメッセージを装飾
         messages = [
