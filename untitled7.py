@@ -25,7 +25,7 @@ def get_weather(city="Tokyo"):
 # ===============================
 # 👚 コーデ生成（OpenAI）
 # ===============================
-def ai_stylist(keyword, city="Tokyo"):
+def ai_stylist(keyword, city="Tokyo", mood_color=None):
     weather = get_weather(city)
     keyword_lower = keyword.lower()
 
@@ -48,6 +48,7 @@ def ai_stylist(keyword, city="Tokyo"):
 キーワード: {keyword}
 
 - 柔らかい印象、シフォン・リネン・パステル。
+- 色のアクセントとして {mood_color if mood_color else 'ナチュラルカラー'} を反映。
 - 最後に "画像生成用：◯◯" を出力。
 """
     else:
@@ -58,6 +59,7 @@ def ai_stylist(keyword, city="Tokyo"):
 キーワード: {keyword}
 
 - シンプルで洗練されたコーデ。
+- 色のアクセントとして {mood_color if mood_color else 'ベーシックカラー'} を反映。
 - 最後に "画像生成用：◯◯" を出力。
 """
 
@@ -102,14 +104,18 @@ Fashion outfit only on hanger, no human, no body, high-quality studio photo.
 # ===============================
 st.title("💙 AIファッションアドバイザー 🎨")
 
+# 今日の気分カラー選択
+mood_color = st.color_picker("🎨 今日の気分カラーを選んでね")
+
 keyword = st.text_input("💬 今日のキーワードを入力（例：デート、韓国、カジュアル）")
 
 if st.button("コーデを提案して！ 💙"):
     with st.spinner("AIがコーデを考えています…"):
-        style, coord_text = ai_stylist(keyword)
-        st.subheader("👗 今日のコーデ提案")
-        st.write(f"💫 スタイル: {style}")
+        style, coord_text = ai_stylist(keyword, mood_color=mood_color)
+        st.markdown("### 👗 今日のコーデ提案")
         st.write(coord_text)
+        st.markdown("---")
+        st.write(f"💫 スタイル: {style}")
 
     with st.spinner("服の画像を生成中…"):
         img_bytes = generate_outfit_image(coord_text)
@@ -118,7 +124,7 @@ if st.button("コーデを提案して！ 💙"):
         else:
             st.warning("⚠️ 画像を表示できませんでした。")
 
-    # ポジティブな声掛け（ランダム表示）
+    # ランダムポジティブメッセージ
     messages = [
         "🌈 **今日もぜったい良い一日になるよ！楽しんでね💙**",
         "✨ **無理せず、自分のペースでいこうね。あなたなら大丈夫！**",
