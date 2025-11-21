@@ -32,7 +32,7 @@ def get_weather(city="Tokyo"):
 - 素材感・シルエットの説明。
 - 最後に "画像生成用：◯◯" で服の色・形・素材を一文で出力。
 """
-    elif "デート" in keyword_lower or "可愛い" in keyword_lower:
+elif "デート" in keyword_lower or "可愛い" in keyword_lower:
         style = "フェミニンナチュラル系"
         prompt = f"""
 あなたは世界で活躍するトップスタイリストです。
