@@ -25,7 +25,7 @@ def get_weather(city="Tokyo"):
 # ===============================
 # 👚 コーデ生成（OpenAI）
 # ===============================
-def ai_stylist(keyword, city="Tokyo", mood_color=None):
+def ai_stylist(keyword, city="Tokyo"):
     weather = get_weather(city)
     style = "シンプルクール系"
     prompt = f"""
@@ -78,29 +78,26 @@ Fashion outfit only on hanger, no human, no body, high-quality studio photo.
 st.set_page_config(page_title="AIファッションアドバイザー", layout="centered")
 st.title("💙 AIファッションアドバイザー 🎨")
 
-# 背景色とボタンのカスタマイズ
+# 背景とカードデザインを可愛く調整
 st.markdown(
     """
     <style>
-    body { background-color: #FFF8F0; }
-    .stButton>button { background-color: #FF69B4; color: white; font-weight: bold; }
+    body { background-color: #FFF0F5; color: #333333; font-family: 'Arial', sans-serif; }
+    .stButton>button { background-color: #FFB6C1; color: #333333; font-weight: bold; border-radius: 10px; }
     </style>
     """, unsafe_allow_html=True
 )
 
-# 今日の気分カラー選択
-mood_color = st.color_picker("🎨 今日の気分カラーを選んでね")
-
-keyword = st.text_input("💬 今日のキーワードを入力（例：デート、韓国、カジュアル）")
+keyword = st.text_input("💬 今日のキーワードを入力（例：デート、カジュアル、モード系）")
 
 if st.button("コーデを提案して！ 💙"):
     with st.spinner("AIがコーデを考えています…"):
-        style, coord_text = ai_stylist(keyword, mood_color=mood_color)
+        style, coord_text = ai_stylist(keyword)
 
         # カード風UI
         st.markdown(
             f"""
-            <div style='padding:15px; border:2px solid #FF69B4; border-radius:15px; background-color:#FFF0F5'>
+            <div style='padding:20px; border:2px solid #FF69B4; border-radius:15px; background-color:#FFF5F8; color:#333333'>
                 <h3>👗 今日のコーデ提案</h3>
                 <p>{coord_text}</p>
                 <p>💫 スタイル: {style}</p>
