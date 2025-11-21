@@ -31,7 +31,7 @@ def ai_stylist(keyword, city="Tokyo"):
     if "enzoblue" in keyword_lower or "モード" in keyword_lower or "韓国" in keyword_lower:
         style = "モード×ミニマルストリート（Enzoblue系）"
         prompt = f"""
-あなたは韓国・ソウルの人気セレクトショップ『ENZOBLUE』のスタイリストです。
+あなたは世界で活躍するトップスタイリストです。
 今日の{weather}
 キーワード: {keyword}
 
@@ -42,7 +42,7 @@ def ai_stylist(keyword, city="Tokyo"):
     elif "デート" in keyword_lower or "可愛い" in keyword_lower:
         style = "フェミニンナチュラル系"
         prompt = f"""
-あなたは韓国の人気スタイリストです。
+あなたは世界で活躍するトップスタイリストです。
 今日の{weather}
 キーワード: {keyword}
 
@@ -52,7 +52,7 @@ def ai_stylist(keyword, city="Tokyo"):
     else:
         style = "シンプルクール系"
         prompt = f"""
-あなたはVOGUE Koreaのスタイリストです。
+あなたはVOGUEのスタイリストです。
 今日の{weather}
 キーワード: {keyword}
 
@@ -117,3 +117,9 @@ if st.button("コーデを提案して！ 💙"):
             st.image(img_bytes, caption="生成した服（2D画像）", use_container_width=True)
         else:
             st.warning("⚠️ 画像を表示できませんでした。")
+
+# ここにポジティブな声掛けを追加
+st.markdown("""
+---
+🌈 **今日も絶対にいい一日になるよ！自分のペースで、楽しく過ごしてね💙**
+""")
