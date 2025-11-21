@@ -78,12 +78,12 @@ Fashion outfit only on hanger, no human, no body, high-quality studio photo.
 st.set_page_config(page_title="AIファッションアドバイザー", layout="centered")
 st.title("💙 AIファッションアドバイザー 🎨")
 
-# 背景とカードデザインを可愛く調整
+# 背景とボタンデザインを可愛く調整
 st.markdown(
     """
     <style>
     body { background-color: #FFF0F5; color: #333333; font-family: 'Arial', sans-serif; }
-    .stButton>button { background-color: #FFB6C1; color: #333333; font-weight: bold; border-radius: 10px; }
+    .stButton>button { background-color: #FF69B4; color: #FFFFFF; font-weight: bold; border-radius: 10px; padding: 10px 20px; }
     </style>
     """, unsafe_allow_html=True
 )
