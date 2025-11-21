@@ -111,7 +111,7 @@ Fashion outfit only on hanger, no human, no body, high-quality studio photo, 4k,
 # 💙 Streamlit UI (デザイン部分)
 # ===============================
 st.set_page_config(
-    page_title="きらきら AIファッションアドバイザー", 
+    page_title="あなたもオシャレまほうにかかっちゃお★", 
     layout="centered", 
     initial_sidebar_state="collapsed",
     page_icon="💖"
