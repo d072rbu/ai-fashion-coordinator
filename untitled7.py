@@ -29,38 +29,13 @@ def ai_stylist(keyword, city="Tokyo", mood_color=None):
     weather = get_weather(city)
     keyword_lower = keyword.lower()
 
-    if False:
-        style = "モード×ミニマルストリート"
-        prompt = f"""
-あなたは世界で活躍するトップスタイリストです。
-今日の{weather}
-キーワード: {keyword}
-
-- ミニマル、ニュートラルカラー、アーバン。
-- 素材感・シルエットの説明。
-- 最後に "画像生成用：◯◯" で服の色・形・素材を一文で出力。
-"""
-    elif "デート" in keyword_lower or "可愛い" in keyword_lower:
-        style = "フェミニンナチュラル系"
-        prompt = f"""
-あなたは世界で活躍するトップスタイリストです。
-今日の{weather}
-キーワード: {keyword}
-
-- 柔らかい印象、シフォン・リネン・パステル。
-- 色のアクセントとして {mood_color if mood_color else 'ナチュラルカラー'} を反映。
-- 最後に "画像生成用：◯◯" を出力。
-"""
-    else:
-        style = "シンプルクール系"
-        prompt = f"""
+    style = "シンプルクール系"
+    prompt = f"""
 あなたはVOGUEのスタイリストです。
 今日の{weather}
 キーワード: {keyword}
 
 - シンプルで洗練されたコーデ。
-- 色のアクセントとして {mood_color if mood_color else 'ベーシックカラー'} を反映。
-- 最後に "画像生成用：◯◯" を出力。
 """
 
     res = client.chat.completions.create(
@@ -104,18 +79,14 @@ Fashion outfit only on hanger, no human, no body, high-quality studio photo.
 # ===============================
 st.title("💙 AIファッションアドバイザー 🎨")
 
-# 今日の気分カラー選択
-mood_color = st.color_picker("🎨 今日の気分カラーを選んでね")
-
 keyword = st.text_input("💬 今日のキーワードを入力（例：デート、韓国、カジュアル）")
 
 if st.button("コーデを提案して！ 💙"):
     with st.spinner("AIがコーデを考えています…"):
-        style, coord_text = ai_stylist(keyword, mood_color=mood_color)
+        style, coord_text = ai_stylist(keyword)
         st.markdown("### 👗 今日のコーデ提案")
         st.write(coord_text)
         st.markdown("---")
-        st.write(f"💫 スタイル: {style}")
 
     with st.spinner("服の画像を生成中…"):
         img_bytes = generate_outfit_image(coord_text)
