@@ -22,14 +22,7 @@ def get_weather(city="Tokyo"):
     return f"{city}の天気は{desc}、気温は{temp}℃です。"
 
 # ===============================
-# 👚 コーデ生成（OpenAI）
-# ===============================
-def ai_stylist(keyword, city="Tokyo"):
-    weather = get_weather(city)
-    keyword_lower = keyword.lower()
-
-    if "enzoblue" in keyword_lower or "モード" in keyword_lower or "韓国" in keyword_lower:
-        style = "モード×ミニマルストリート（Enzoblue系）"
+# 👚 コーデ生成"
         prompt = f"""
 あなたは世界で活躍するトップスタイリストです。
 今日の{weather}
@@ -100,7 +93,8 @@ Fashion outfit only on hanger, no human, no body, high-quality studio photo.
 # 💙 Streamlit UI
 # ===============================
 st.title("💙 AIファッションアドバイザー 🎨")
-st.write("🌤️ 今日のコーデを提案！（人物なし・服だけ）")
+# st.write("🌤️ 今日のコーデを提案！") を非表示にしたいので削除またはコメントアウト
+# st.write("🌤️ 今日のコーデを提案！")
 
 keyword = st.text_input("💬 今日のキーワードを入力（例：デート、韓国、カジュアル）")
 
@@ -119,7 +113,15 @@ if st.button("コーデを提案して！ 💙"):
             st.warning("⚠️ 画像を表示できませんでした。")
 
 # ポジティブな声掛け（ボタン押下後の一番最後に表示）
-    st.markdown("""
+    import random
+    messages = [
+        "🌈 **今日もぜったい良い一日になるよ！楽しんでね💙**",
+        "✨ **無理せず、自分のペースでいこうね。あなたなら大丈夫！**",
+        "💫 **小さな一歩でも素敵な一日につながるよ。頑張りすぎないでね！**",
+        "🌷 **今日のあなたもすごく素敵。リラックスしていってらっしゃい！**",
+        "☀️ **今日はきっといいことがある日！楽しみにしててね💙**"
+    ]
+    st.markdown(random.choice(messages))("""
 ---
 🌈 **今日も絶対にいい一日になるよ！自分のペースで、楽しく過ごしてね💙**
 """)
